@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum MarketplacePlatform {
+  MERCADO_LIVRE
+  MAGALU
+}
+
+enum ImportStatus {
+  PROCESSING
+  SUCCESS
+  ERROR
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  username     String   @unique
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  avatarUrl    String?  @map("avatar_url")
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model MarketplaceAccount {
+  id                String              @id @default(uuid())
+  platform          MarketplacePlatform
+  name              String
+  cnpj              String?
+  externalAccountId String              @map("external_account_id")
+  accessToken       String              @map("access_token") @db.Text
+  refreshToken      String?             @map("refresh_token") @db.Text
+  tokenExpiresAt    DateTime?           @map("token_expires_at")
+  isActive          Boolean             @default(true) @map("is_active")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  orders            Order[]
+  imports           Import[]
+
+  @@unique([platform, externalAccountId])
+  @@index([platform, isActive])
+  @@map("marketplace_accounts")
+}
+
+model Customer {
+  id              String   @id @default(uuid())
+  name            String
+  phone           String?
+  normalizedPhone String?  @map("normalized_phone")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  orders          Order[]
+
+  @@index([name])
+  @@index([normalizedPhone])
+  @@map("customers")
+}
+
+model Order {
+  id                   String              @id @default(uuid())
+  externalOrderId      String              @map("external_order_id")
+  platform             MarketplacePlatform
+  orderDate            DateTime?           @map("order_date")
+  status               String?
+  customerId           String              @map("customer_id")
+  marketplaceAccountId String              @map("marketplace_account_id")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+  customer             Customer            @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  marketplaceAccount   MarketplaceAccount  @relation(fields: [marketplaceAccountId], references: [id], onDelete: Restrict)
+  invoices             Invoice[]
+  items                OrderItem[]
+
+  @@unique([marketplaceAccountId, externalOrderId])
+  @@index([customerId])
+  @@index([platform, orderDate])
+  @@map("orders")
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  invoiceKey    String   @unique @map("invoice_key")
+  invoiceNumber String?  @map("invoice_number")
+  customerName  String?  @map("customer_name")
+  phone         String?
+  processedAt   DateTime @default(now()) @map("processed_at")
+  orderId       String   @map("order_id")
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("invoices")
+}
+
+model OrderItem {
+  id                String  @id @default(uuid())
+  productName       String  @map("product_name")
+  externalProductId String? @map("external_product_id")
+  quantity          Int
+  unitPrice         Decimal @map("unit_price") @db.Decimal(12, 2)
+  orderId           String  @map("order_id")
+  order             Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Import {
+  id                    String              @id @default(uuid())
+  platform              MarketplacePlatform
+  status                ImportStatus        @default(PROCESSING)
+  startedAt             DateTime            @default(now()) @map("started_at")
+  finishedAt            DateTime?           @map("finished_at")
+  ordersFound           Int                 @default(0) @map("orders_found")
+  ordersProcessed       Int                 @default(0) @map("orders_processed")
+  customersWithPhone    Int                 @default(0) @map("customers_with_phone")
+  customersWithoutPhone Int                 @default(0) @map("customers_without_phone")
+  errorsCount           Int                 @default(0) @map("errors_count")
+  marketplaceAccountId  String              @map("marketplace_account_id")
+  marketplaceAccount    MarketplaceAccount  @relation(fields: [marketplaceAccountId], references: [id], onDelete: Restrict)
+
+  @@index([marketplaceAccountId, startedAt])
+  @@index([status])
+  @@map("imports")
+}

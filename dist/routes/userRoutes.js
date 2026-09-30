@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const createUserController_1 = require("../controllers/users/createUserController");
+const deleteUserController_1 = require("../controllers/users/deleteUserController");
+const getUserController_1 = require("../controllers/users/getUserController");
+const listUsersController_1 = require("../controllers/users/listUsersController");
+const updateUserController_1 = require("../controllers/users/updateUserController");
+const isAuthenticated_1 = require("../middlewares/isAuthenticated");
+const userRoutes = (0, express_1.Router)();
+exports.userRoutes = userRoutes;
+const createUserController = new createUserController_1.CreateUserController();
+const listUsersController = new listUsersController_1.ListUsersController();
+const getUserController = new getUserController_1.GetUserController();
+const updateUserController = new updateUserController_1.UpdateUserController();
+const deleteUserController = new deleteUserController_1.DeleteUserController();
+userRoutes.post("/", (req, res) => createUserController.handle(req, res));
+userRoutes.get("/", isAuthenticated_1.isAuthenticated, (req, res) => listUsersController.handle(req, res));
+userRoutes.get("/:id", isAuthenticated_1.isAuthenticated, (req, res) => getUserController.handle(req, res));
+userRoutes.put("/:id", isAuthenticated_1.isAuthenticated, (req, res) => updateUserController.handle(req, res));
+userRoutes.delete("/:id", isAuthenticated_1.isAuthenticated, (req, res) => deleteUserController.handle(req, res));
+exports.default = userRoutes;
+//# sourceMappingURL=userRoutes.js.map
