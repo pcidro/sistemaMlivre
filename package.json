@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
+    "start": "node dist/server.js",
     "test": "tsx --test utils/tokenEncryption.test.ts integrations/mercadolivre/mercadoLivreOAuth.test.ts"
   },
   "devDependencies": {
