@@ -837,8 +837,8 @@ export declare const MarketplaceAccountScalarFieldEnum: {
     readonly name: 'name';
     readonly cnpj: 'cnpj';
     readonly externalAccountId: 'externalAccountId';
-    readonly accessToken: 'accessToken';
-    readonly refreshToken: 'refreshToken';
+    readonly accessTokenEncrypted: 'accessTokenEncrypted';
+    readonly refreshTokenEncrypted: 'refreshTokenEncrypted';
     readonly tokenExpiresAt: 'tokenExpiresAt';
     readonly isActive: 'isActive';
     readonly createdAt: 'createdAt';

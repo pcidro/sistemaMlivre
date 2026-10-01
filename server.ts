@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import routes from "./routes";
 import userRoutes from "./routes/userRoutes";
+import marketplaceAccountRoutes from "./routes/marketplaceAccountRoutes";
 import cors from "cors";
 import { errorHandler } from "./middlewares/errorHandler";
 
@@ -19,6 +20,7 @@ app.use(
 
 app.use("/api", routes);
 app.use("/api/users", userRoutes);
+app.use("/api/marketplace-accounts", marketplaceAccountRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Rota não encontrada" });

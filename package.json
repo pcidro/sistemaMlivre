@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "tsx --test utils/tokenEncryption.test.ts integrations/mercadolivre/mercadoLivreOAuth.test.ts"
   },
   "devDependencies": {
     "@express-rate-limit/tsconfig": "^1.0.5",

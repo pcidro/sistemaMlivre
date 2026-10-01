@@ -7,6 +7,7 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const marketplaceAccountRoutes_1 = __importDefault(require("./routes/marketplaceAccountRoutes"));
 const cors_1 = __importDefault(require("cors"));
 const errorHandler_1 = require("./middlewares/errorHandler");
 const app = (0, express_1.default)();
@@ -18,6 +19,7 @@ app.use((0, cors_1.default)({
 }));
 app.use("/api", routes_1.default);
 app.use("/api/users", userRoutes_1.default);
+app.use("/api/marketplace-accounts", marketplaceAccountRoutes_1.default);
 app.use((_req, res) => {
     res.status(404).json({ error: "Rota não encontrada" });
 });
