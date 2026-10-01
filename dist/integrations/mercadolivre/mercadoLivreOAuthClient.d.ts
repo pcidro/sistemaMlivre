@@ -17,6 +17,7 @@ export declare class MercadoLivreOAuthClient {
     exchangeAuthorizationCode(code: string): Promise<MercadoLivreTokenSet>;
     refreshAccessToken(refreshToken: string): Promise<MercadoLivreTokenSet>;
     getAuthenticatedAccount(accessToken: string): Promise<MercadoLivreAuthenticatedAccount>;
+    revokeAuthorization(externalAccountId: string, accessToken: string): Promise<void>;
     private requestToken;
 }
 export {};

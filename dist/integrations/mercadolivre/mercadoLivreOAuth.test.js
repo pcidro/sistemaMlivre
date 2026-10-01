@@ -100,4 +100,16 @@ const originalEnvironment = Object.fromEntries(environmentKeys.map((key) => [key
     strict_1.default.equal(tokenSet.accessToken, "new-access-token");
     strict_1.default.equal(tokenSet.refreshToken, "new-refresh-token");
 });
+(0, node_test_1.test)("revoga a autorização sem enviar o token pela URL", async () => {
+    const mockFetch = (async (input, init) => {
+        const url = new URL(String(input));
+        const headers = new Headers(init?.headers);
+        strict_1.default.equal(init?.method, "DELETE");
+        strict_1.default.equal(url.toString(), "https://api.mercadolibre.com/users/123456789/applications/123456789");
+        strict_1.default.equal(headers.get("Authorization"), "Bearer access-token");
+        strict_1.default.equal(url.searchParams.has("access_token"), false);
+        return new Response(null, { status: 204 });
+    });
+    await new mercadoLivreOAuthClient_1.MercadoLivreOAuthClient(mockFetch).revokeAuthorization("123456789", "access-token");
+});
 //# sourceMappingURL=mercadoLivreOAuth.test.js.map

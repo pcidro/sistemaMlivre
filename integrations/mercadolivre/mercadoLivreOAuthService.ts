@@ -46,6 +46,26 @@ export class MercadoLivreOAuthService {
       Date.now() + tokens.expiresInSeconds * 1000,
     );
 
+    const existingAccount = await prisma.marketplaceAccount.findUnique({
+      where: {
+        platform_externalAccountId: {
+          platform: "MERCADO_LIVRE",
+          externalAccountId: account.externalAccountId,
+        },
+      },
+      select: { userId: true },
+    });
+
+    if (
+      existingAccount?.userId &&
+      existingAccount.userId !== initiatedByUserId
+    ) {
+      throw new AppError(
+        "Esta conta do Mercado Livre já pertence a outro usuário",
+        409,
+      );
+    }
+
     return prisma.marketplaceAccount.upsert({
       where: {
         platform_externalAccountId: {
@@ -61,6 +81,7 @@ export class MercadoLivreOAuthService {
         accessTokenEncrypted: encryptToken(tokens.accessToken),
         refreshTokenEncrypted: encryptToken(tokens.refreshToken),
         tokenExpiresAt,
+        userId: initiatedByUserId,
       },
       update: {
         name: account.name,
@@ -69,6 +90,7 @@ export class MercadoLivreOAuthService {
         refreshTokenEncrypted: encryptToken(tokens.refreshToken),
         tokenExpiresAt,
         isActive: true,
+        userId: initiatedByUserId,
       },
       select: {
         id: true,

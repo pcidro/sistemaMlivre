@@ -8,6 +8,7 @@ const MERCADO_LIVRE_AUTHORIZATION_URL =
 const MERCADO_LIVRE_TOKEN_URL = "https://api.mercadolibre.com/oauth/token";
 const MERCADO_LIVRE_CURRENT_USER_URL =
   "https://api.mercadolibre.com/users/me";
+const MERCADO_LIVRE_API_BASE_URL = "https://api.mercadolibre.com";
 
 const externalIdSchema = z.union([z.string().min(1), z.number().int().positive()]);
 
@@ -184,6 +185,39 @@ export class MercadoLivreOAuthClient {
       throw new AppError(
         "O Mercado Livre retornou dados de conta inválidos",
         502,
+      );
+    }
+  }
+
+  async revokeAuthorization(
+    externalAccountId: string,
+    accessToken: string,
+  ): Promise<void> {
+    const config = getMercadoLivreConfig();
+    const url = new URL(
+      `${MERCADO_LIVRE_API_BASE_URL}/users/${encodeURIComponent(externalAccountId)}/applications/${encodeURIComponent(config.clientId)}`,
+    );
+    let response: Response;
+
+    try {
+      response = await this.fetchFn(url, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    } catch {
+      throw new AppError(
+        "Não foi possível revogar a autorização no Mercado Livre",
+        503,
+      );
+    }
+
+    if (!response.ok) {
+      throw new AppError(
+        "O Mercado Livre não permitiu revogar a autorização da conta",
+        response.status === 429 ? 429 : 502,
       );
     }
   }

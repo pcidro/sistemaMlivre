@@ -5,7 +5,7 @@
     "dev": "tsx watch server.ts",
     "build": "prisma generate && tsc",
     "start": "node dist/server.js",
-    "test": "tsx --test utils/tokenEncryption.test.ts integrations/mercadolivre/mercadoLivreOAuth.test.ts"
+    "test": "tsx --test utils/tokenEncryption.test.ts utils/normalizePhone.test.ts integrations/mercadolivre/mercadoLivreOAuth.test.ts integrations/mercadolivre/mercadoLivreOrderService.test.ts integrations/mercadolivre/mercadoLivreRecipientService.test.ts services/marketplaceAccounts/disconnectMercadoLivreAccountService.test.ts"
   },
   "devDependencies": {
     "@express-rate-limit/tsconfig": "^1.0.5",

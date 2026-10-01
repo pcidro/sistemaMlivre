@@ -23,6 +23,7 @@ export type MarketplaceAccountMinAggregateOutputType = {
     isActive: boolean | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    userId: string | null;
 };
 export type MarketplaceAccountMaxAggregateOutputType = {
     id: string | null;
@@ -36,6 +37,7 @@ export type MarketplaceAccountMaxAggregateOutputType = {
     isActive: boolean | null;
     createdAt: Date | null;
     updatedAt: Date | null;
+    userId: string | null;
 };
 export type MarketplaceAccountCountAggregateOutputType = {
     id: number;
@@ -49,6 +51,7 @@ export type MarketplaceAccountCountAggregateOutputType = {
     isActive: number;
     createdAt: number;
     updatedAt: number;
+    userId: number;
     _all: number;
 };
 export type MarketplaceAccountMinAggregateInputType = {
@@ -63,6 +66,7 @@ export type MarketplaceAccountMinAggregateInputType = {
     isActive?: true;
     createdAt?: true;
     updatedAt?: true;
+    userId?: true;
 };
 export type MarketplaceAccountMaxAggregateInputType = {
     id?: true;
@@ -76,6 +80,7 @@ export type MarketplaceAccountMaxAggregateInputType = {
     isActive?: true;
     createdAt?: true;
     updatedAt?: true;
+    userId?: true;
 };
 export type MarketplaceAccountCountAggregateInputType = {
     id?: true;
@@ -89,6 +94,7 @@ export type MarketplaceAccountCountAggregateInputType = {
     isActive?: true;
     createdAt?: true;
     updatedAt?: true;
+    userId?: true;
     _all?: true;
 };
 export type MarketplaceAccountAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -165,6 +171,7 @@ export type MarketplaceAccountGroupByOutputType = {
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    userId: string | null;
     _count: MarketplaceAccountCountAggregateOutputType | null;
     _min: MarketplaceAccountMinAggregateOutputType | null;
     _max: MarketplaceAccountMaxAggregateOutputType | null;
@@ -187,6 +194,8 @@ export type MarketplaceAccountWhereInput = {
     isActive?: Prisma.BoolFilter<"MarketplaceAccount"> | boolean;
     createdAt?: Prisma.DateTimeFilter<"MarketplaceAccount"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"MarketplaceAccount"> | Date | string;
+    userId?: Prisma.StringNullableFilter<"MarketplaceAccount"> | string | null;
+    user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
     orders?: Prisma.OrderListRelationFilter;
     imports?: Prisma.ImportListRelationFilter;
 };
@@ -202,6 +211,8 @@ export type MarketplaceAccountOrderByWithRelationInput = {
     isActive?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
+    userId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    user?: Prisma.UserOrderByWithRelationInput;
     orders?: Prisma.OrderOrderByRelationAggregateInput;
     imports?: Prisma.ImportOrderByRelationAggregateInput;
 };
@@ -221,6 +232,8 @@ export type MarketplaceAccountWhereUniqueInput = Prisma.AtLeast<{
     isActive?: Prisma.BoolFilter<"MarketplaceAccount"> | boolean;
     createdAt?: Prisma.DateTimeFilter<"MarketplaceAccount"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"MarketplaceAccount"> | Date | string;
+    userId?: Prisma.StringNullableFilter<"MarketplaceAccount"> | string | null;
+    user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
     orders?: Prisma.OrderListRelationFilter;
     imports?: Prisma.ImportListRelationFilter;
 }, "id" | "platform_externalAccountId">;
@@ -236,6 +249,7 @@ export type MarketplaceAccountOrderByWithAggregationInput = {
     isActive?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
+    userId?: Prisma.SortOrderInput | Prisma.SortOrder;
     _count?: Prisma.MarketplaceAccountCountOrderByAggregateInput;
     _max?: Prisma.MarketplaceAccountMaxOrderByAggregateInput;
     _min?: Prisma.MarketplaceAccountMinOrderByAggregateInput;
@@ -255,6 +269,7 @@ export type MarketplaceAccountScalarWhereWithAggregatesInput = {
     isActive?: Prisma.BoolWithAggregatesFilter<"MarketplaceAccount"> | boolean;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"MarketplaceAccount"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"MarketplaceAccount"> | Date | string;
+    userId?: Prisma.StringNullableWithAggregatesFilter<"MarketplaceAccount"> | string | null;
 };
 export type MarketplaceAccountCreateInput = {
     id?: string;
@@ -268,6 +283,7 @@ export type MarketplaceAccountCreateInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    user?: Prisma.UserCreateNestedOneWithoutMarketplaceAccountsInput;
     orders?: Prisma.OrderCreateNestedManyWithoutMarketplaceAccountInput;
     imports?: Prisma.ImportCreateNestedManyWithoutMarketplaceAccountInput;
 };
@@ -283,6 +299,7 @@ export type MarketplaceAccountUncheckedCreateInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    userId?: string | null;
     orders?: Prisma.OrderUncheckedCreateNestedManyWithoutMarketplaceAccountInput;
     imports?: Prisma.ImportUncheckedCreateNestedManyWithoutMarketplaceAccountInput;
 };
@@ -298,6 +315,7 @@ export type MarketplaceAccountUpdateInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    user?: Prisma.UserUpdateOneWithoutMarketplaceAccountsNestedInput;
     orders?: Prisma.OrderUpdateManyWithoutMarketplaceAccountNestedInput;
     imports?: Prisma.ImportUpdateManyWithoutMarketplaceAccountNestedInput;
 };
@@ -313,6 +331,7 @@ export type MarketplaceAccountUncheckedUpdateInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     orders?: Prisma.OrderUncheckedUpdateManyWithoutMarketplaceAccountNestedInput;
     imports?: Prisma.ImportUncheckedUpdateManyWithoutMarketplaceAccountNestedInput;
 };
@@ -328,6 +347,7 @@ export type MarketplaceAccountCreateManyInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    userId?: string | null;
 };
 export type MarketplaceAccountUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -354,6 +374,15 @@ export type MarketplaceAccountUncheckedUpdateManyInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+};
+export type MarketplaceAccountListRelationFilter = {
+    every?: Prisma.MarketplaceAccountWhereInput;
+    some?: Prisma.MarketplaceAccountWhereInput;
+    none?: Prisma.MarketplaceAccountWhereInput;
+};
+export type MarketplaceAccountOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
 };
 export type MarketplaceAccountPlatformExternalAccountIdCompoundUniqueInput = {
     platform: $Enums.MarketplacePlatform;
@@ -371,6 +400,7 @@ export type MarketplaceAccountCountOrderByAggregateInput = {
     isActive?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
 };
 export type MarketplaceAccountMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
@@ -384,6 +414,7 @@ export type MarketplaceAccountMaxOrderByAggregateInput = {
     isActive?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
 };
 export type MarketplaceAccountMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
@@ -397,10 +428,49 @@ export type MarketplaceAccountMinOrderByAggregateInput = {
     isActive?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
 };
 export type MarketplaceAccountScalarRelationFilter = {
     is?: Prisma.MarketplaceAccountWhereInput;
     isNot?: Prisma.MarketplaceAccountWhereInput;
+};
+export type MarketplaceAccountCreateNestedManyWithoutUserInput = {
+    create?: Prisma.XOR<Prisma.MarketplaceAccountCreateWithoutUserInput, Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput> | Prisma.MarketplaceAccountCreateWithoutUserInput[] | Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput | Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput[];
+    createMany?: Prisma.MarketplaceAccountCreateManyUserInputEnvelope;
+    connect?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+};
+export type MarketplaceAccountUncheckedCreateNestedManyWithoutUserInput = {
+    create?: Prisma.XOR<Prisma.MarketplaceAccountCreateWithoutUserInput, Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput> | Prisma.MarketplaceAccountCreateWithoutUserInput[] | Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput | Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput[];
+    createMany?: Prisma.MarketplaceAccountCreateManyUserInputEnvelope;
+    connect?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+};
+export type MarketplaceAccountUpdateManyWithoutUserNestedInput = {
+    create?: Prisma.XOR<Prisma.MarketplaceAccountCreateWithoutUserInput, Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput> | Prisma.MarketplaceAccountCreateWithoutUserInput[] | Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput | Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput[];
+    upsert?: Prisma.MarketplaceAccountUpsertWithWhereUniqueWithoutUserInput | Prisma.MarketplaceAccountUpsertWithWhereUniqueWithoutUserInput[];
+    createMany?: Prisma.MarketplaceAccountCreateManyUserInputEnvelope;
+    set?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    disconnect?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    delete?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    connect?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    update?: Prisma.MarketplaceAccountUpdateWithWhereUniqueWithoutUserInput | Prisma.MarketplaceAccountUpdateWithWhereUniqueWithoutUserInput[];
+    updateMany?: Prisma.MarketplaceAccountUpdateManyWithWhereWithoutUserInput | Prisma.MarketplaceAccountUpdateManyWithWhereWithoutUserInput[];
+    deleteMany?: Prisma.MarketplaceAccountScalarWhereInput | Prisma.MarketplaceAccountScalarWhereInput[];
+};
+export type MarketplaceAccountUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: Prisma.XOR<Prisma.MarketplaceAccountCreateWithoutUserInput, Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput> | Prisma.MarketplaceAccountCreateWithoutUserInput[] | Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput | Prisma.MarketplaceAccountCreateOrConnectWithoutUserInput[];
+    upsert?: Prisma.MarketplaceAccountUpsertWithWhereUniqueWithoutUserInput | Prisma.MarketplaceAccountUpsertWithWhereUniqueWithoutUserInput[];
+    createMany?: Prisma.MarketplaceAccountCreateManyUserInputEnvelope;
+    set?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    disconnect?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    delete?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    connect?: Prisma.MarketplaceAccountWhereUniqueInput | Prisma.MarketplaceAccountWhereUniqueInput[];
+    update?: Prisma.MarketplaceAccountUpdateWithWhereUniqueWithoutUserInput | Prisma.MarketplaceAccountUpdateWithWhereUniqueWithoutUserInput[];
+    updateMany?: Prisma.MarketplaceAccountUpdateManyWithWhereWithoutUserInput | Prisma.MarketplaceAccountUpdateManyWithWhereWithoutUserInput[];
+    deleteMany?: Prisma.MarketplaceAccountScalarWhereInput | Prisma.MarketplaceAccountScalarWhereInput[];
 };
 export type EnumMarketplacePlatformFieldUpdateOperationsInput = {
     set?: $Enums.MarketplacePlatform;
@@ -435,6 +505,74 @@ export type MarketplaceAccountUpdateOneRequiredWithoutImportsNestedInput = {
     connect?: Prisma.MarketplaceAccountWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.MarketplaceAccountUpdateToOneWithWhereWithoutImportsInput, Prisma.MarketplaceAccountUpdateWithoutImportsInput>, Prisma.MarketplaceAccountUncheckedUpdateWithoutImportsInput>;
 };
+export type MarketplaceAccountCreateWithoutUserInput = {
+    id?: string;
+    platform: $Enums.MarketplacePlatform;
+    name: string;
+    cnpj?: string | null;
+    externalAccountId: string;
+    accessTokenEncrypted: string;
+    refreshTokenEncrypted?: string | null;
+    tokenExpiresAt?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    orders?: Prisma.OrderCreateNestedManyWithoutMarketplaceAccountInput;
+    imports?: Prisma.ImportCreateNestedManyWithoutMarketplaceAccountInput;
+};
+export type MarketplaceAccountUncheckedCreateWithoutUserInput = {
+    id?: string;
+    platform: $Enums.MarketplacePlatform;
+    name: string;
+    cnpj?: string | null;
+    externalAccountId: string;
+    accessTokenEncrypted: string;
+    refreshTokenEncrypted?: string | null;
+    tokenExpiresAt?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    orders?: Prisma.OrderUncheckedCreateNestedManyWithoutMarketplaceAccountInput;
+    imports?: Prisma.ImportUncheckedCreateNestedManyWithoutMarketplaceAccountInput;
+};
+export type MarketplaceAccountCreateOrConnectWithoutUserInput = {
+    where: Prisma.MarketplaceAccountWhereUniqueInput;
+    create: Prisma.XOR<Prisma.MarketplaceAccountCreateWithoutUserInput, Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput>;
+};
+export type MarketplaceAccountCreateManyUserInputEnvelope = {
+    data: Prisma.MarketplaceAccountCreateManyUserInput | Prisma.MarketplaceAccountCreateManyUserInput[];
+    skipDuplicates?: boolean;
+};
+export type MarketplaceAccountUpsertWithWhereUniqueWithoutUserInput = {
+    where: Prisma.MarketplaceAccountWhereUniqueInput;
+    update: Prisma.XOR<Prisma.MarketplaceAccountUpdateWithoutUserInput, Prisma.MarketplaceAccountUncheckedUpdateWithoutUserInput>;
+    create: Prisma.XOR<Prisma.MarketplaceAccountCreateWithoutUserInput, Prisma.MarketplaceAccountUncheckedCreateWithoutUserInput>;
+};
+export type MarketplaceAccountUpdateWithWhereUniqueWithoutUserInput = {
+    where: Prisma.MarketplaceAccountWhereUniqueInput;
+    data: Prisma.XOR<Prisma.MarketplaceAccountUpdateWithoutUserInput, Prisma.MarketplaceAccountUncheckedUpdateWithoutUserInput>;
+};
+export type MarketplaceAccountUpdateManyWithWhereWithoutUserInput = {
+    where: Prisma.MarketplaceAccountScalarWhereInput;
+    data: Prisma.XOR<Prisma.MarketplaceAccountUpdateManyMutationInput, Prisma.MarketplaceAccountUncheckedUpdateManyWithoutUserInput>;
+};
+export type MarketplaceAccountScalarWhereInput = {
+    AND?: Prisma.MarketplaceAccountScalarWhereInput | Prisma.MarketplaceAccountScalarWhereInput[];
+    OR?: Prisma.MarketplaceAccountScalarWhereInput[];
+    NOT?: Prisma.MarketplaceAccountScalarWhereInput | Prisma.MarketplaceAccountScalarWhereInput[];
+    id?: Prisma.StringFilter<"MarketplaceAccount"> | string;
+    platform?: Prisma.EnumMarketplacePlatformFilter<"MarketplaceAccount"> | $Enums.MarketplacePlatform;
+    name?: Prisma.StringFilter<"MarketplaceAccount"> | string;
+    cnpj?: Prisma.StringNullableFilter<"MarketplaceAccount"> | string | null;
+    externalAccountId?: Prisma.StringFilter<"MarketplaceAccount"> | string;
+    accessTokenEncrypted?: Prisma.StringFilter<"MarketplaceAccount"> | string;
+    refreshTokenEncrypted?: Prisma.StringNullableFilter<"MarketplaceAccount"> | string | null;
+    tokenExpiresAt?: Prisma.DateTimeNullableFilter<"MarketplaceAccount"> | Date | string | null;
+    isActive?: Prisma.BoolFilter<"MarketplaceAccount"> | boolean;
+    createdAt?: Prisma.DateTimeFilter<"MarketplaceAccount"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"MarketplaceAccount"> | Date | string;
+    userId?: Prisma.StringNullableFilter<"MarketplaceAccount"> | string | null;
+};
 export type MarketplaceAccountCreateWithoutOrdersInput = {
     id?: string;
     platform: $Enums.MarketplacePlatform;
@@ -447,6 +585,7 @@ export type MarketplaceAccountCreateWithoutOrdersInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    user?: Prisma.UserCreateNestedOneWithoutMarketplaceAccountsInput;
     imports?: Prisma.ImportCreateNestedManyWithoutMarketplaceAccountInput;
 };
 export type MarketplaceAccountUncheckedCreateWithoutOrdersInput = {
@@ -461,6 +600,7 @@ export type MarketplaceAccountUncheckedCreateWithoutOrdersInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    userId?: string | null;
     imports?: Prisma.ImportUncheckedCreateNestedManyWithoutMarketplaceAccountInput;
 };
 export type MarketplaceAccountCreateOrConnectWithoutOrdersInput = {
@@ -488,6 +628,7 @@ export type MarketplaceAccountUpdateWithoutOrdersInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    user?: Prisma.UserUpdateOneWithoutMarketplaceAccountsNestedInput;
     imports?: Prisma.ImportUpdateManyWithoutMarketplaceAccountNestedInput;
 };
 export type MarketplaceAccountUncheckedUpdateWithoutOrdersInput = {
@@ -502,6 +643,7 @@ export type MarketplaceAccountUncheckedUpdateWithoutOrdersInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     imports?: Prisma.ImportUncheckedUpdateManyWithoutMarketplaceAccountNestedInput;
 };
 export type MarketplaceAccountCreateWithoutImportsInput = {
@@ -516,6 +658,7 @@ export type MarketplaceAccountCreateWithoutImportsInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    user?: Prisma.UserCreateNestedOneWithoutMarketplaceAccountsInput;
     orders?: Prisma.OrderCreateNestedManyWithoutMarketplaceAccountInput;
 };
 export type MarketplaceAccountUncheckedCreateWithoutImportsInput = {
@@ -530,6 +673,7 @@ export type MarketplaceAccountUncheckedCreateWithoutImportsInput = {
     isActive?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    userId?: string | null;
     orders?: Prisma.OrderUncheckedCreateNestedManyWithoutMarketplaceAccountInput;
 };
 export type MarketplaceAccountCreateOrConnectWithoutImportsInput = {
@@ -557,6 +701,7 @@ export type MarketplaceAccountUpdateWithoutImportsInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    user?: Prisma.UserUpdateOneWithoutMarketplaceAccountsNestedInput;
     orders?: Prisma.OrderUpdateManyWithoutMarketplaceAccountNestedInput;
 };
 export type MarketplaceAccountUncheckedUpdateWithoutImportsInput = {
@@ -571,7 +716,64 @@ export type MarketplaceAccountUncheckedUpdateWithoutImportsInput = {
     isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     orders?: Prisma.OrderUncheckedUpdateManyWithoutMarketplaceAccountNestedInput;
+};
+export type MarketplaceAccountCreateManyUserInput = {
+    id?: string;
+    platform: $Enums.MarketplacePlatform;
+    name: string;
+    cnpj?: string | null;
+    externalAccountId: string;
+    accessTokenEncrypted: string;
+    refreshTokenEncrypted?: string | null;
+    tokenExpiresAt?: Date | string | null;
+    isActive?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type MarketplaceAccountUpdateWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    platform?: Prisma.EnumMarketplacePlatformFieldUpdateOperationsInput | $Enums.MarketplacePlatform;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    externalAccountId?: Prisma.StringFieldUpdateOperationsInput | string;
+    accessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string;
+    refreshTokenEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    tokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    orders?: Prisma.OrderUpdateManyWithoutMarketplaceAccountNestedInput;
+    imports?: Prisma.ImportUpdateManyWithoutMarketplaceAccountNestedInput;
+};
+export type MarketplaceAccountUncheckedUpdateWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    platform?: Prisma.EnumMarketplacePlatformFieldUpdateOperationsInput | $Enums.MarketplacePlatform;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    externalAccountId?: Prisma.StringFieldUpdateOperationsInput | string;
+    accessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string;
+    refreshTokenEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    tokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    orders?: Prisma.OrderUncheckedUpdateManyWithoutMarketplaceAccountNestedInput;
+    imports?: Prisma.ImportUncheckedUpdateManyWithoutMarketplaceAccountNestedInput;
+};
+export type MarketplaceAccountUncheckedUpdateManyWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    platform?: Prisma.EnumMarketplacePlatformFieldUpdateOperationsInput | $Enums.MarketplacePlatform;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    cnpj?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    externalAccountId?: Prisma.StringFieldUpdateOperationsInput | string;
+    accessTokenEncrypted?: Prisma.StringFieldUpdateOperationsInput | string;
+    refreshTokenEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    tokenExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 /**
  * Count Type MarketplaceAccountCountOutputType
@@ -617,6 +819,8 @@ export type MarketplaceAccountSelect<ExtArgs extends runtime.Types.Extensions.In
     isActive?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
+    user?: boolean | Prisma.MarketplaceAccount$userArgs<ExtArgs>;
     orders?: boolean | Prisma.MarketplaceAccount$ordersArgs<ExtArgs>;
     imports?: boolean | Prisma.MarketplaceAccount$importsArgs<ExtArgs>;
     _count?: boolean | Prisma.MarketplaceAccountCountOutputTypeDefaultArgs<ExtArgs>;
@@ -633,6 +837,8 @@ export type MarketplaceAccountSelectCreateManyAndReturn<ExtArgs extends runtime.
     isActive?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
+    user?: boolean | Prisma.MarketplaceAccount$userArgs<ExtArgs>;
 }, ExtArgs["result"]["marketplaceAccount"]>;
 export type MarketplaceAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
@@ -646,6 +852,8 @@ export type MarketplaceAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.
     isActive?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
+    user?: boolean | Prisma.MarketplaceAccount$userArgs<ExtArgs>;
 }, ExtArgs["result"]["marketplaceAccount"]>;
 export type MarketplaceAccountSelectScalar = {
     id?: boolean;
@@ -659,18 +867,25 @@ export type MarketplaceAccountSelectScalar = {
     isActive?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
 };
-export type MarketplaceAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "name" | "cnpj" | "externalAccountId" | "accessTokenEncrypted" | "refreshTokenEncrypted" | "tokenExpiresAt" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["marketplaceAccount"]>;
+export type MarketplaceAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platform" | "name" | "cnpj" | "externalAccountId" | "accessTokenEncrypted" | "refreshTokenEncrypted" | "tokenExpiresAt" | "isActive" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["marketplaceAccount"]>;
 export type MarketplaceAccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    user?: boolean | Prisma.MarketplaceAccount$userArgs<ExtArgs>;
     orders?: boolean | Prisma.MarketplaceAccount$ordersArgs<ExtArgs>;
     imports?: boolean | Prisma.MarketplaceAccount$importsArgs<ExtArgs>;
     _count?: boolean | Prisma.MarketplaceAccountCountOutputTypeDefaultArgs<ExtArgs>;
 };
-export type MarketplaceAccountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {};
-export type MarketplaceAccountIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {};
+export type MarketplaceAccountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    user?: boolean | Prisma.MarketplaceAccount$userArgs<ExtArgs>;
+};
+export type MarketplaceAccountIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    user?: boolean | Prisma.MarketplaceAccount$userArgs<ExtArgs>;
+};
 export type $MarketplaceAccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "MarketplaceAccount";
     objects: {
+        user: Prisma.$UserPayload<ExtArgs> | null;
         orders: Prisma.$OrderPayload<ExtArgs>[];
         imports: Prisma.$ImportPayload<ExtArgs>[];
     };
@@ -686,6 +901,7 @@ export type $MarketplaceAccountPayload<ExtArgs extends runtime.Types.Extensions.
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
     }, ExtArgs["result"]["marketplaceAccount"]>;
     composites: {};
 };
@@ -1015,6 +1231,7 @@ export interface MarketplaceAccountDelegate<ExtArgs extends runtime.Types.Extens
  */
 export interface Prisma__MarketplaceAccountClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
+    user<T extends Prisma.MarketplaceAccount$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarketplaceAccount$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     orders<T extends Prisma.MarketplaceAccount$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarketplaceAccount$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     imports<T extends Prisma.MarketplaceAccount$importsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MarketplaceAccount$importsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
@@ -1053,6 +1270,7 @@ export interface MarketplaceAccountFieldRefs {
     readonly isActive: Prisma.FieldRef<"MarketplaceAccount", 'Boolean'>;
     readonly createdAt: Prisma.FieldRef<"MarketplaceAccount", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"MarketplaceAccount", 'DateTime'>;
+    readonly userId: Prisma.FieldRef<"MarketplaceAccount", 'String'>;
 }
 /**
  * MarketplaceAccount findUnique
@@ -1297,6 +1515,10 @@ export type MarketplaceAccountCreateManyAndReturnArgs<ExtArgs extends runtime.Ty
      */
     data: Prisma.MarketplaceAccountCreateManyInput | Prisma.MarketplaceAccountCreateManyInput[];
     skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.MarketplaceAccountIncludeCreateManyAndReturn<ExtArgs> | null;
 };
 /**
  * MarketplaceAccount update
@@ -1364,6 +1586,10 @@ export type MarketplaceAccountUpdateManyAndReturnArgs<ExtArgs extends runtime.Ty
      * Limit how many MarketplaceAccounts to update.
      */
     limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.MarketplaceAccountIncludeUpdateManyAndReturn<ExtArgs> | null;
 };
 /**
  * MarketplaceAccount upsert
@@ -1427,6 +1653,24 @@ export type MarketplaceAccountDeleteManyArgs<ExtArgs extends runtime.Types.Exten
      * Limit how many MarketplaceAccounts to delete.
      */
     limit?: number;
+};
+/**
+ * MarketplaceAccount.user
+ */
+export type MarketplaceAccount$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: Prisma.UserSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: Prisma.UserOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.UserInclude<ExtArgs> | null;
+    where?: Prisma.UserWhereInput;
 };
 /**
  * MarketplaceAccount.orders

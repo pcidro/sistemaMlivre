@@ -29,15 +29,16 @@ enum ImportStatus {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  username     String   @unique
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  avatarUrl    String?  @map("avatar_url")
-  role         UserRole @default(USER)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id                  String               @id @default(uuid())
+  name                String
+  username            String               @unique
+  email               String               @unique
+  passwordHash        String               @map("password_hash")
+  avatarUrl           String?              @map("avatar_url")
+  role                UserRole             @default(USER)
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  marketplaceAccounts MarketplaceAccount[]
 
   @@map("users")
 }
@@ -54,11 +55,14 @@ model MarketplaceAccount {
   isActive              Boolean             @default(true) @map("is_active")
   createdAt             DateTime            @default(now()) @map("created_at")
   updatedAt             DateTime            @updatedAt @map("updated_at")
+  userId                String?             @map("user_id")
+  user                  User?               @relation(fields: [userId], references: [id], onDelete: Restrict)
   orders                Order[]
   imports               Import[]
 
   @@unique([platform, externalAccountId])
   @@index([platform, isActive])
+  @@index([userId])
   @@map("marketplace_accounts")
 }
 

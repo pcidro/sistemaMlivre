@@ -44,6 +44,19 @@ function stateCookieOptions() {
   };
 }
 
+function frontendRedirectUrl(status: "success" | "error"): string {
+  const frontendUrl = process.env.FRONTEND_URL;
+
+  if (!frontendUrl) {
+    throw new AppError("FRONTEND_URL não configurada", 500);
+  }
+
+  const redirectUrl = new URL(frontendUrl);
+  redirectUrl.searchParams.set("mercadolivre", status);
+
+  return redirectUrl.toString();
+}
+
 export class MercadoLivreOAuthController {
   async connect(req: Request, res: Response) {
     const oauthService = new MercadoLivreOAuthService();
@@ -62,31 +75,32 @@ export class MercadoLivreOAuthController {
   }
 
   async callback(req: Request, res: Response) {
-    const receivedState =
-      typeof req.query.state === "string" ? req.query.state : "";
-    const stateCookie = readCookie(req, MERCADO_LIVRE_OAUTH_STATE_COOKIE);
+    try {
+      const receivedState =
+        typeof req.query.state === "string" ? req.query.state : "";
+      const stateCookie = readCookie(req, MERCADO_LIVRE_OAUTH_STATE_COOKIE);
 
-    res.clearCookie(
-      MERCADO_LIVRE_OAUTH_STATE_COOKIE,
-      stateCookieOptions(),
-    );
+      res.clearCookie(
+        MERCADO_LIVRE_OAUTH_STATE_COOKIE,
+        stateCookieOptions(),
+      );
 
-    const { userId } = validateMercadoLivreOAuthState(
-      receivedState,
-      stateCookie,
-    );
+      const { userId } = validateMercadoLivreOAuthState(
+        receivedState,
+        stateCookie,
+      );
 
-    if (typeof req.query.error === "string") {
-      throw new AppError("Autorização do Mercado Livre não concluída", 400);
+      if (typeof req.query.error === "string") {
+        throw new AppError("Autorização do Mercado Livre não concluída", 400);
+      }
+
+      const { code } = callbackQuerySchema.parse(req.query);
+      const oauthService = new MercadoLivreOAuthService();
+      await oauthService.completeAuthorization(code, userId);
+
+      return res.redirect(frontendRedirectUrl("success"));
+    } catch {
+      return res.redirect(frontendRedirectUrl("error"));
     }
-
-    const { code } = callbackQuerySchema.parse(req.query);
-    const oauthService = new MercadoLivreOAuthService();
-    const account = await oauthService.completeAuthorization(code, userId);
-
-    return res.status(200).json({
-      message: "Conta do Mercado Livre conectada com sucesso",
-      account,
-    });
   }
 }

@@ -1,10 +1,16 @@
 import { Router } from "express";
 
 import { MercadoLivreOAuthController } from "../controllers/marketplaceAccounts/mercadoLivreOAuthController";
+import { MarketplaceAccountController } from "../controllers/marketplaceAccounts/marketplaceAccountController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 const marketplaceAccountRoutes = Router();
 const mercadoLivreOAuthController = new MercadoLivreOAuthController();
+const marketplaceAccountController = new MarketplaceAccountController();
+
+marketplaceAccountRoutes.get("/", isAuthenticated, (req, res) =>
+  marketplaceAccountController.list(req, res),
+);
 
 marketplaceAccountRoutes.get(
   "/mercadolivre/connect",
@@ -14,6 +20,12 @@ marketplaceAccountRoutes.get(
 
 marketplaceAccountRoutes.get("/mercadolivre/callback", (req, res) =>
   mercadoLivreOAuthController.callback(req, res),
+);
+
+marketplaceAccountRoutes.delete(
+  "/mercadolivre/:marketplaceAccountId",
+  isAuthenticated,
+  (req, res) => marketplaceAccountController.disconnectMercadoLivre(req, res),
 );
 
 export default marketplaceAccountRoutes;

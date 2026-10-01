@@ -142,7 +142,8 @@ exports.MarketplaceAccountScalarFieldEnum = {
     tokenExpiresAt: 'tokenExpiresAt',
     isActive: 'isActive',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    userId: 'userId'
 };
 exports.CustomerScalarFieldEnum = {
     id: 'id',

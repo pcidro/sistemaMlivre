@@ -149,3 +149,28 @@ test("renova o token e preserva o novo refresh token retornado", async () => {
   assert.equal(tokenSet.accessToken, "new-access-token");
   assert.equal(tokenSet.refreshToken, "new-refresh-token");
 });
+
+test("revoga a autorização sem enviar o token pela URL", async () => {
+  const mockFetch = (async (
+    input: Parameters<typeof fetch>[0],
+    init?: Parameters<typeof fetch>[1],
+  ) => {
+    const url = new URL(String(input));
+    const headers = new Headers(init?.headers);
+
+    assert.equal(init?.method, "DELETE");
+    assert.equal(
+      url.toString(),
+      "https://api.mercadolibre.com/users/123456789/applications/123456789",
+    );
+    assert.equal(headers.get("Authorization"), "Bearer access-token");
+    assert.equal(url.searchParams.has("access_token"), false);
+
+    return new Response(null, { status: 204 });
+  }) as typeof fetch;
+
+  await new MercadoLivreOAuthClient(mockFetch).revokeAuthorization(
+    "123456789",
+    "access-token",
+  );
+});

@@ -843,6 +843,7 @@ export declare const MarketplaceAccountScalarFieldEnum: {
     readonly isActive: 'isActive';
     readonly createdAt: 'createdAt';
     readonly updatedAt: 'updatedAt';
+    readonly userId: 'userId';
 };
 export type MarketplaceAccountScalarFieldEnum = (typeof MarketplaceAccountScalarFieldEnum)[keyof typeof MarketplaceAccountScalarFieldEnum];
 export declare const CustomerScalarFieldEnum: {
