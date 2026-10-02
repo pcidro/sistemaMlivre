@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { AppError } from "../../errors/AppError";
 import { normalizePhone } from "../../utils/normalizePhone";
+import { normalizeCustomerDocument } from "../../utils/normalizeDocument";
+import type { NormalizedDocument } from "../../utils/normalizeDocument";
 import type { MarketplaceCustomer, MarketplaceOrder } from "../types";
 import { MercadoLivreTokenService } from "./mercadoLivreTokenService";
 
@@ -32,6 +34,7 @@ const orderDetailsSchema = z.object({
       last_name: z.string().nullable().optional(),
       phone: phoneSchema,
       alternative_phone: phoneSchema,
+      billing_info: z.object({ id: externalIdSchema.nullable().optional() }).nullable().optional(),
     })
     .nullable()
     .optional(),
@@ -60,6 +63,32 @@ const shipmentSchema = z.object({
   destination: recipientFieldsSchema.nullable().optional(),
 });
 
+const billingIdentificationSchema = z.object({
+  buyer: z.object({
+    billing_info: z.object({
+      identification: z.object({
+        type: z.string().nullable().optional(),
+        number: z.string().nullable().optional(),
+      }).nullable().optional(),
+    }).nullable().optional(),
+  }).nullable().optional(),
+});
+
+const receiverDocumentSchema = z.object({
+  receiver: z.object({
+    document: z.object({
+      id: z.string().nullable().optional(),
+      value: z.string().nullable().optional(),
+    }).nullable().optional(),
+  }).nullable().optional(),
+});
+
+function officialDocument(value?: string | null, type?: string | null): NormalizedDocument {
+  return type === "CPF" || type === "CNPJ"
+    ? normalizeCustomerDocument(value, type)
+    : normalizeCustomerDocument(null);
+}
+
 interface AccessTokenProvider {
   getValidAccessToken(marketplaceAccountId: string): Promise<string>;
   refreshAccessToken(marketplaceAccountId: string): Promise<string>;
@@ -68,6 +97,7 @@ interface AccessTokenProvider {
 interface MercadoLivreRecipientServiceDependencies {
   tokenService?: AccessTokenProvider;
   fetchFn?: typeof globalThis.fetch;
+  sleepFn?: (milliseconds: number) => Promise<void>;
 }
 
 interface RequestContext {
@@ -135,11 +165,14 @@ function shipmentRecipientData(
 export class MercadoLivreRecipientService {
   private readonly tokenService: AccessTokenProvider;
   private readonly fetchFn: typeof globalThis.fetch;
+  private readonly sleepFn: (milliseconds: number) => Promise<void>;
 
   constructor(dependencies: MercadoLivreRecipientServiceDependencies = {}) {
     this.tokenService =
       dependencies.tokenService ?? new MercadoLivreTokenService();
     this.fetchFn = dependencies.fetchFn ?? globalThis.fetch;
+    this.sleepFn = dependencies.sleepFn ??
+      ((milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)));
   }
 
   async getRecipient(
@@ -169,7 +202,21 @@ export class MercadoLivreRecipientService {
     const fallback: MarketplaceCustomer = {
       name: orderBuyer.name ?? normalizeName(order.customer.name),
       phone: orderBuyer.phone ?? normalizePhone(order.customer.phone),
+      ...normalizeCustomerDocument(order.customer.document, order.customer.documentType),
     };
+
+    // Fluxo vigente: obter o ID no pedido antes de consultar os dados de faturamento.
+    const billingId = detailsResult.data.buyer?.billing_info?.id;
+    if (billingId !== null && billingId !== undefined) {
+      const payload = await this.requestJson(
+        `${API_BASE_URL}/orders/billing-info/MLB/${encodeURIComponent(externalIdToString(billingId))}`,
+        context, {}, true,
+      );
+      const parsed = billingIdentificationSchema.safeParse(payload);
+      const identification = parsed.success ? parsed.data.buyer?.billing_info?.identification : null;
+      const document = officialDocument(identification?.number, identification?.type);
+      if (document.document !== null) Object.assign(fallback, document);
+    }
 
     const shipmentId =
       detailsResult.data.shipping?.id === null ||
@@ -178,6 +225,16 @@ export class MercadoLivreRecipientService {
         : externalIdToString(detailsResult.data.shipping.id);
 
     if (!shipmentId) return fallback;
+
+    if (!fallback.document) {
+      const payload = await this.requestJson(
+        `${API_BASE_URL}/shipments/${encodeURIComponent(shipmentId)}/billing_info`,
+        context, {}, true,
+      );
+      const parsed = receiverDocumentSchema.safeParse(payload);
+      const document = parsed.success ? parsed.data.receiver?.document : null;
+      Object.assign(fallback, officialDocument(document?.value, document?.id));
+    }
 
     const shipmentUrl = new URL(`${API_BASE_URL}/shipments/${shipmentId}`);
     shipmentUrl.searchParams.set("views", "destination");
@@ -203,6 +260,8 @@ export class MercadoLivreRecipientService {
     return {
       name: recipient.name ?? fallback.name,
       phone: recipient.phone ?? fallback.phone,
+      document: fallback.document ?? null,
+      documentType: fallback.documentType ?? null,
     };
   }
 
@@ -252,8 +311,10 @@ export class MercadoLivreRecipientService {
     input: string | URL,
     context: RequestContext,
     extraHeaders: Record<string, string> = {},
+    optionalDocument = false,
   ): Promise<unknown | null> {
     let refreshedAfterUnauthorized = false;
+    let rateLimitRetries = 0;
 
     while (true) {
       let response: Response;
@@ -282,11 +343,21 @@ export class MercadoLivreRecipientService {
         continue;
       }
 
-      if (response.status === 204 || response.status === 404) {
+      if (response.status === 204 || response.status === 404 || optionalDocument && response.status === 403) {
         return null;
       }
 
       if (response.status === 429) {
+        if (rateLimitRetries < 2) {
+          const header = response.headers.get("retry-after");
+          const seconds = header === null ? NaN : Number(header);
+          const fromHeader = Number.isFinite(seconds) && seconds >= 0
+            ? seconds * 1000
+            : Math.max(0, Date.parse(header ?? "") - Date.now()) || 0;
+          await this.sleepFn(Math.max(500 * 2 ** rateLimitRetries, fromHeader));
+          rateLimitRetries++;
+          continue;
+        }
         throw new AppError(
           "Limite de requisições do Mercado Livre excedido. Tente novamente mais tarde",
           429,

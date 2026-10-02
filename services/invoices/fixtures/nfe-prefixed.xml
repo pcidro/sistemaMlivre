@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documento fictício e reduzido para testes de extração, sem validade fiscal. -->
+<nfe:NFe xmlns:nfe="http://www.portalfiscal.inf.br/nfe">
+  <nfe:infNFe Id="NFe35261000000000000100550010000001231000001234" versao="4.00">
+    <nfe:ide><nfe:mod>55</nfe:mod><nfe:nNF>123</nfe:nNF><nfe:tpAmb>2</nfe:tpAmb></nfe:ide>
+    <nfe:dest>
+      <nfe:xNome>Ana Fictícia</nfe:xNome>
+      <nfe:enderDest><nfe:fone>21999990000</nfe:fone></nfe:enderDest>
+    </nfe:dest>
+  </nfe:infNFe>
+</nfe:NFe>

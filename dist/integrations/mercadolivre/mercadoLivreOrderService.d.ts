@@ -18,6 +18,7 @@ export interface GetMercadoLivreOrdersInput {
     userId: string;
     dateFrom: Date;
     dateTo: Date;
+    onOrderError?: () => void;
 }
 interface OwnedMarketplaceAccount {
     id: string;

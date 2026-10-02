@@ -1,4 +1,5 @@
 import type * as runtime from "@prisma/client/runtime/client";
+import type * as $Enums from "../enums.js";
 import type * as Prisma from "../internal/prismaNamespace.js";
 /**
  * Model Customer
@@ -15,6 +16,8 @@ export type CustomerMinAggregateOutputType = {
     name: string | null;
     phone: string | null;
     normalizedPhone: string | null;
+    document: string | null;
+    documentType: $Enums.DocumentType | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 };
@@ -23,6 +26,8 @@ export type CustomerMaxAggregateOutputType = {
     name: string | null;
     phone: string | null;
     normalizedPhone: string | null;
+    document: string | null;
+    documentType: $Enums.DocumentType | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 };
@@ -31,6 +36,8 @@ export type CustomerCountAggregateOutputType = {
     name: number;
     phone: number;
     normalizedPhone: number;
+    document: number;
+    documentType: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
@@ -40,6 +47,8 @@ export type CustomerMinAggregateInputType = {
     name?: true;
     phone?: true;
     normalizedPhone?: true;
+    document?: true;
+    documentType?: true;
     createdAt?: true;
     updatedAt?: true;
 };
@@ -48,6 +57,8 @@ export type CustomerMaxAggregateInputType = {
     name?: true;
     phone?: true;
     normalizedPhone?: true;
+    document?: true;
+    documentType?: true;
     createdAt?: true;
     updatedAt?: true;
 };
@@ -56,6 +67,8 @@ export type CustomerCountAggregateInputType = {
     name?: true;
     phone?: true;
     normalizedPhone?: true;
+    document?: true;
+    documentType?: true;
     createdAt?: true;
     updatedAt?: true;
     _all?: true;
@@ -124,9 +137,11 @@ export type CustomerGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 };
 export type CustomerGroupByOutputType = {
     id: string;
-    name: string;
+    name: string | null;
     phone: string | null;
     normalizedPhone: string | null;
+    document: string | null;
+    documentType: $Enums.DocumentType | null;
     createdAt: Date;
     updatedAt: Date;
     _count: CustomerCountAggregateOutputType | null;
@@ -141,18 +156,22 @@ export type CustomerWhereInput = {
     OR?: Prisma.CustomerWhereInput[];
     NOT?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[];
     id?: Prisma.StringFilter<"Customer"> | string;
-    name?: Prisma.StringFilter<"Customer"> | string;
+    name?: Prisma.StringNullableFilter<"Customer"> | string | null;
     phone?: Prisma.StringNullableFilter<"Customer"> | string | null;
     normalizedPhone?: Prisma.StringNullableFilter<"Customer"> | string | null;
+    document?: Prisma.StringNullableFilter<"Customer"> | string | null;
+    documentType?: Prisma.EnumDocumentTypeNullableFilter<"Customer"> | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string;
     orders?: Prisma.OrderListRelationFilter;
 };
 export type CustomerOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
-    name?: Prisma.SortOrder;
+    name?: Prisma.SortOrderInput | Prisma.SortOrder;
     phone?: Prisma.SortOrderInput | Prisma.SortOrder;
     normalizedPhone?: Prisma.SortOrderInput | Prisma.SortOrder;
+    document?: Prisma.SortOrderInput | Prisma.SortOrder;
+    documentType?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     orders?: Prisma.OrderOrderByRelationAggregateInput;
@@ -162,18 +181,22 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
     AND?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[];
     OR?: Prisma.CustomerWhereInput[];
     NOT?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[];
-    name?: Prisma.StringFilter<"Customer"> | string;
+    name?: Prisma.StringNullableFilter<"Customer"> | string | null;
     phone?: Prisma.StringNullableFilter<"Customer"> | string | null;
     normalizedPhone?: Prisma.StringNullableFilter<"Customer"> | string | null;
+    document?: Prisma.StringNullableFilter<"Customer"> | string | null;
+    documentType?: Prisma.EnumDocumentTypeNullableFilter<"Customer"> | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string;
     orders?: Prisma.OrderListRelationFilter;
 }, "id">;
 export type CustomerOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
-    name?: Prisma.SortOrder;
+    name?: Prisma.SortOrderInput | Prisma.SortOrder;
     phone?: Prisma.SortOrderInput | Prisma.SortOrder;
     normalizedPhone?: Prisma.SortOrderInput | Prisma.SortOrder;
+    document?: Prisma.SortOrderInput | Prisma.SortOrder;
+    documentType?: Prisma.SortOrderInput | Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     _count?: Prisma.CustomerCountOrderByAggregateInput;
@@ -185,69 +208,85 @@ export type CustomerScalarWhereWithAggregatesInput = {
     OR?: Prisma.CustomerScalarWhereWithAggregatesInput[];
     NOT?: Prisma.CustomerScalarWhereWithAggregatesInput | Prisma.CustomerScalarWhereWithAggregatesInput[];
     id?: Prisma.StringWithAggregatesFilter<"Customer"> | string;
-    name?: Prisma.StringWithAggregatesFilter<"Customer"> | string;
+    name?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null;
     phone?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null;
     normalizedPhone?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null;
+    document?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null;
+    documentType?: Prisma.EnumDocumentTypeNullableWithAggregatesFilter<"Customer"> | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string;
 };
 export type CustomerCreateInput = {
     id?: string;
-    name: string;
+    name?: string | null;
     phone?: string | null;
     normalizedPhone?: string | null;
+    document?: string | null;
+    documentType?: $Enums.DocumentType | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput;
 };
 export type CustomerUncheckedCreateInput = {
     id?: string;
-    name: string;
+    name?: string | null;
     phone?: string | null;
     normalizedPhone?: string | null;
+    document?: string | null;
+    documentType?: $Enums.DocumentType | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput;
 };
 export type CustomerUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     normalizedPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    documentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput;
 };
 export type CustomerUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     normalizedPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    documentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput;
 };
 export type CustomerCreateManyInput = {
     id?: string;
-    name: string;
+    name?: string | null;
     phone?: string | null;
     normalizedPhone?: string | null;
+    document?: string | null;
+    documentType?: $Enums.DocumentType | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
 export type CustomerUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     normalizedPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    documentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type CustomerUncheckedUpdateManyInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     normalizedPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    documentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -256,6 +295,8 @@ export type CustomerCountOrderByAggregateInput = {
     name?: Prisma.SortOrder;
     phone?: Prisma.SortOrder;
     normalizedPhone?: Prisma.SortOrder;
+    document?: Prisma.SortOrder;
+    documentType?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -264,6 +305,8 @@ export type CustomerMaxOrderByAggregateInput = {
     name?: Prisma.SortOrder;
     phone?: Prisma.SortOrder;
     normalizedPhone?: Prisma.SortOrder;
+    document?: Prisma.SortOrder;
+    documentType?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -272,12 +315,17 @@ export type CustomerMinOrderByAggregateInput = {
     name?: Prisma.SortOrder;
     phone?: Prisma.SortOrder;
     normalizedPhone?: Prisma.SortOrder;
+    document?: Prisma.SortOrder;
+    documentType?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
 export type CustomerScalarRelationFilter = {
     is?: Prisma.CustomerWhereInput;
     isNot?: Prisma.CustomerWhereInput;
+};
+export type NullableEnumDocumentTypeFieldUpdateOperationsInput = {
+    set?: $Enums.DocumentType | null;
 };
 export type CustomerCreateNestedOneWithoutOrdersInput = {
     create?: Prisma.XOR<Prisma.CustomerCreateWithoutOrdersInput, Prisma.CustomerUncheckedCreateWithoutOrdersInput>;
@@ -293,17 +341,21 @@ export type CustomerUpdateOneRequiredWithoutOrdersNestedInput = {
 };
 export type CustomerCreateWithoutOrdersInput = {
     id?: string;
-    name: string;
+    name?: string | null;
     phone?: string | null;
     normalizedPhone?: string | null;
+    document?: string | null;
+    documentType?: $Enums.DocumentType | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
 export type CustomerUncheckedCreateWithoutOrdersInput = {
     id?: string;
-    name: string;
+    name?: string | null;
     phone?: string | null;
     normalizedPhone?: string | null;
+    document?: string | null;
+    documentType?: $Enums.DocumentType | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -322,17 +374,21 @@ export type CustomerUpdateToOneWithWhereWithoutOrdersInput = {
 };
 export type CustomerUpdateWithoutOrdersInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     normalizedPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    documentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type CustomerUncheckedUpdateWithoutOrdersInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     normalizedPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    document?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    documentType?: Prisma.NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -365,6 +421,8 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
     name?: boolean;
     phone?: boolean;
     normalizedPhone?: boolean;
+    document?: boolean;
+    documentType?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     orders?: boolean | Prisma.Customer$ordersArgs<ExtArgs>;
@@ -375,6 +433,8 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
     name?: boolean;
     phone?: boolean;
     normalizedPhone?: boolean;
+    document?: boolean;
+    documentType?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 }, ExtArgs["result"]["customer"]>;
@@ -383,6 +443,8 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
     name?: boolean;
     phone?: boolean;
     normalizedPhone?: boolean;
+    document?: boolean;
+    documentType?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 }, ExtArgs["result"]["customer"]>;
@@ -391,10 +453,12 @@ export type CustomerSelectScalar = {
     name?: boolean;
     phone?: boolean;
     normalizedPhone?: boolean;
+    document?: boolean;
+    documentType?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "normalizedPhone" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>;
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "normalizedPhone" | "document" | "documentType" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>;
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     orders?: boolean | Prisma.Customer$ordersArgs<ExtArgs>;
     _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>;
@@ -408,9 +472,11 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: string;
-        name: string;
+        name: string | null;
         phone: string | null;
         normalizedPhone: string | null;
+        document: string | null;
+        documentType: $Enums.DocumentType | null;
         createdAt: Date;
         updatedAt: Date;
     }, ExtArgs["result"]["customer"]>;
@@ -772,6 +838,8 @@ export interface CustomerFieldRefs {
     readonly name: Prisma.FieldRef<"Customer", 'String'>;
     readonly phone: Prisma.FieldRef<"Customer", 'String'>;
     readonly normalizedPhone: Prisma.FieldRef<"Customer", 'String'>;
+    readonly document: Prisma.FieldRef<"Customer", 'String'>;
+    readonly documentType: Prisma.FieldRef<"Customer", 'DocumentType'>;
     readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Customer", 'DateTime'>;
 }

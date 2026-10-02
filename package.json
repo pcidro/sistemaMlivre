@@ -5,9 +5,10 @@
     "dev": "tsx watch server.ts",
     "build": "prisma generate && tsc",
     "start": "node dist/server.js",
-    "test": "tsx --test utils/tokenEncryption.test.ts utils/normalizePhone.test.ts integrations/mercadolivre/mercadoLivreOAuth.test.ts integrations/mercadolivre/mercadoLivreOrderService.test.ts integrations/mercadolivre/mercadoLivreRecipientService.test.ts services/marketplaceAccounts/disconnectMercadoLivreAccountService.test.ts"
+    "test": "tsx --test prisma/customerDocumentMigration.test.ts utils/tokenEncryption.test.ts utils/normalizePhone.test.ts utils/normalizeDocument.test.ts integrations/mercadolivre/mercadoLivreOAuth.test.ts integrations/mercadolivre/mercadoLivreTokenService.test.ts integrations/mercadolivre/mercadoLivreOrderService.test.ts integrations/mercadolivre/mercadoLivreRecipientService.test.ts integrations/mercadolivre/mercadoLivreInvoiceService.test.ts integrations/mercadolivre/MercadoLivreRequestLimiter.test.ts services/invoices/NFeParserService.test.ts services/customers/CustomerExtractionService.test.ts services/imports/ImportedOrderPersistenceService.test.ts services/imports/MercadoLivreImportService.test.ts routes/importRoutes.test.ts routes/customerRoutes.test.ts routes/dashboardRoutes.test.ts services/customers/CustomerQueryService.test.ts services/dashboard/DashboardService.test.ts services/marketplaceAccounts/disconnectMercadoLivreAccountService.test.ts"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.4.3",
     "@express-rate-limit/tsconfig": "^1.0.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
@@ -27,6 +28,7 @@
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
+    "fast-xml-parser": "^5.11.2",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.0",
     "zod": "^4.6.5"

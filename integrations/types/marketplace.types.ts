@@ -9,6 +9,8 @@ export interface MarketplaceAccountData {
 export interface MarketplaceCustomer {
   name: string | null;
   phone: string | null;
+  document?: string | null;
+  documentType?: "CPF" | "CNPJ" | null;
 }
 
 export interface MarketplaceOrderItem {

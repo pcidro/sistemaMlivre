@@ -6,10 +6,12 @@ interface AccessTokenProvider {
 interface MercadoLivreRecipientServiceDependencies {
     tokenService?: AccessTokenProvider;
     fetchFn?: typeof globalThis.fetch;
+    sleepFn?: (milliseconds: number) => Promise<void>;
 }
 export declare class MercadoLivreRecipientService {
     private readonly tokenService;
     private readonly fetchFn;
+    private readonly sleepFn;
     constructor(dependencies?: MercadoLivreRecipientServiceDependencies);
     getRecipient(marketplaceAccountId: string, order: Pick<MarketplaceOrder, "externalOrderId" | "customer">): Promise<MarketplaceCustomer>;
     private findForwardShipmentId;

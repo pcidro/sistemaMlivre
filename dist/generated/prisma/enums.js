@@ -9,7 +9,7 @@
 * 🟢 You can import this file directly.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ImportStatus = exports.MarketplacePlatform = exports.UserRole = void 0;
+exports.DocumentType = exports.ImportStatus = exports.MarketplacePlatform = exports.UserRole = void 0;
 exports.UserRole = {
     USER: 'USER',
     ADMIN: 'ADMIN'
@@ -21,6 +21,11 @@ exports.MarketplacePlatform = {
 exports.ImportStatus = {
     PROCESSING: 'PROCESSING',
     SUCCESS: 'SUCCESS',
+    PARTIAL_SUCCESS: 'PARTIAL_SUCCESS',
     ERROR: 'ERROR'
+};
+exports.DocumentType = {
+    CPF: 'CPF',
+    CNPJ: 'CNPJ'
 };
 //# sourceMappingURL=enums.js.map

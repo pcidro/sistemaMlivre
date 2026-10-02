@@ -74,6 +74,8 @@ export declare const CustomerScalarFieldEnum: {
     readonly name: 'name';
     readonly phone: 'phone';
     readonly normalizedPhone: 'normalizedPhone';
+    readonly document: 'document';
+    readonly documentType: 'documentType';
     readonly createdAt: 'createdAt';
     readonly updatedAt: 'updatedAt';
 };

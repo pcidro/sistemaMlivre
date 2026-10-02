@@ -851,6 +851,8 @@ export declare const CustomerScalarFieldEnum: {
     readonly name: 'name';
     readonly phone: 'phone';
     readonly normalizedPhone: 'normalizedPhone';
+    readonly document: 'document';
+    readonly documentType: 'documentType';
     readonly createdAt: 'createdAt';
     readonly updatedAt: 'updatedAt';
 };
@@ -954,6 +956,14 @@ export type ListEnumMarketplacePlatformFieldRefInput<$PrismaModel> = FieldRefInp
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
+/**
+ * Reference to a field of type 'DocumentType'
+ */
+export type EnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType'>;
+/**
+ * Reference to a field of type 'DocumentType[]'
+ */
+export type ListEnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType[]'>;
 /**
  * Reference to a field of type 'Int'
  */

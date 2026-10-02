@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documento fictício e reduzido para testes de extração, sem validade fiscal. -->
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+  <NFe>
+    <infNFe Id="NFe35261000000000000100550010000001231000001234" versao="4.00">
+      <ide><mod>55</mod><nNF>123</nNF><tpAmb>2</tpAmb></ide>
+      <emit>
+        <xNome>Emitente Fictício</xNome>
+        <enderEmit><fone>1133330000</fone></enderEmit>
+      </emit>
+      <dest>
+        <xNome>João Fictício</xNome>
+        <enderDest>
+          <xLgr>Rua de Teste</xLgr>
+          <nro>100</nro>
+          <xMun>São Paulo</xMun>
+          <UF>SP</UF>
+        </enderDest>
+      </dest>
+    </infNFe>
+  </NFe>
+</nfeProc>

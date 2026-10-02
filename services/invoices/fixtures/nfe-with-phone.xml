@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documento fictício e reduzido para testes de extração, sem validade fiscal. -->
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+  <NFe>
+    <infNFe Id="NFe35261000000000000100550010000001231000001234" versao="4.00">
+      <ide>
+        <cUF>35</cUF>
+        <mod>55</mod>
+        <serie>1</serie>
+        <nNF>000000123</nNF>
+        <dhEmi>2026-10-01T10:00:00-03:00</dhEmi>
+        <tpAmb>2</tpAmb>
+      </ide>
+      <emit>
+        <CNPJ>00000000000100</CNPJ>
+        <xNome>Emitente Fictício</xNome>
+        <enderEmit><fone>1133330000</fone></enderEmit>
+      </emit>
+      <dest>
+        <CPF>00000000000</CPF>
+        <xNome>Maria Fictícia &amp; Família</xNome>
+        <enderDest>
+          <xLgr>Rua de Teste</xLgr>
+          <nro>100</nro>
+          <xBairro>Centro</xBairro>
+          <cMun>3550308</cMun>
+          <xMun>São Paulo</xMun>
+          <UF>SP</UF>
+          <CEP>00000000</CEP>
+          <fone>11999990000</fone>
+        </enderDest>
+        <indIEDest>9</indIEDest>
+      </dest>
+    </infNFe>
+  </NFe>
+  <protNFe versao="4.00">
+    <infProt>
+      <tpAmb>2</tpAmb>
+      <chNFe>35261000000000000100550010000001231000001234</chNFe>
+      <cStat>100</cStat>
+      <xMotivo>Documento fictício para teste</xMotivo>
+    </infProt>
+  </protNFe>
+</nfeProc>

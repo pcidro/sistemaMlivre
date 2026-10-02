@@ -42,7 +42,7 @@ const ordersPageSchema = z.object({
     offset: z.number().int().nonnegative(),
     limit: z.number().int().positive(),
   }),
-  results: z.array(orderSchema),
+  results: z.array(z.unknown()),
 });
 
 export interface GetMercadoLivreOrdersInput {
@@ -50,6 +50,7 @@ export interface GetMercadoLivreOrdersInput {
   userId: string;
   dateFrom: Date;
   dateTo: Date;
+  onOrderError?: () => void;
 }
 
 interface OwnedMarketplaceAccount {
@@ -232,6 +233,7 @@ export class MercadoLivreOrderService {
         windowEnd,
         input.dateFrom,
         input.dateTo,
+        input.onOrderError,
       );
 
       windowStart = addUtcHours(windowEnd, 1);
@@ -244,6 +246,7 @@ export class MercadoLivreOrderService {
     windowEnd: Date,
     requestedFrom: Date,
     requestedTo: Date,
+    onOrderError?: () => void,
   ): AsyncGenerator<MarketplaceOrder[]> {
     let offset = 0;
     const seenOrderIds = new Set<string>();
@@ -257,22 +260,29 @@ export class MercadoLivreOrderService {
         offset,
       );
 
-      const orders = page.results
-        .map(normalizeMercadoLivreOrder)
-        .filter((order) => {
-          if (!order.orderDate) return false;
-
-          const isInsideRequestedPeriod =
-            order.orderDate >= requestedFrom && order.orderDate <= requestedTo;
-          const isNewOrder = !seenOrderIds.has(order.externalOrderId);
-
-          if (isInsideRequestedPeriod && isNewOrder) {
-            seenOrderIds.add(order.externalOrderId);
-            return true;
+      const orders: MarketplaceOrder[] = [];
+      for (const rawOrder of page.results) {
+        let order: MarketplaceOrder;
+        try {
+          order = normalizeMercadoLivreOrder(orderSchema.parse(rawOrder));
+        } catch {
+          if (!onOrderError) {
+            throw new AppError("O Mercado Livre retornou um pedido inválido", 502);
           }
+          onOrderError();
+          continue;
+        }
+        if (!order.orderDate) continue;
 
-          return false;
-        });
+        const isInsideRequestedPeriod =
+          order.orderDate >= requestedFrom && order.orderDate <= requestedTo;
+        const isNewOrder = !seenOrderIds.has(order.externalOrderId);
+
+        if (isInsideRequestedPeriod && isNewOrder) {
+          seenOrderIds.add(order.externalOrderId);
+          orders.push(order);
+        }
+      }
 
       if (orders.length > 0) {
         yield orders;

@@ -122,6 +122,8 @@ exports.CustomerScalarFieldEnum = {
     name: 'name',
     phone: 'phone',
     normalizedPhone: 'normalizedPhone',
+    document: 'document',
+    documentType: 'documentType',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };

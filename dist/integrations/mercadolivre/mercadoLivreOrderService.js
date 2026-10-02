@@ -39,7 +39,7 @@ const ordersPageSchema = zod_1.z.object({
         offset: zod_1.z.number().int().nonnegative(),
         limit: zod_1.z.number().int().positive(),
     }),
-    results: zod_1.z.array(orderSchema),
+    results: zod_1.z.array(zod_1.z.unknown()),
 });
 function normalizeExternalId(value) {
     if (typeof value === "number") {
@@ -141,28 +141,37 @@ class MercadoLivreOrderService {
         while (windowStart <= finalWindowEnd) {
             const proposedEnd = addUtcHours(windowStart, WINDOW_SIZE_HOURS - 1);
             const windowEnd = proposedEnd < finalWindowEnd ? proposedEnd : finalWindowEnd;
-            yield* this.getWindowOrders(account, windowStart, windowEnd, input.dateFrom, input.dateTo);
+            yield* this.getWindowOrders(account, windowStart, windowEnd, input.dateFrom, input.dateTo, input.onOrderError);
             windowStart = addUtcHours(windowEnd, 1);
         }
     }
-    async *getWindowOrders(account, windowStart, windowEnd, requestedFrom, requestedTo) {
+    async *getWindowOrders(account, windowStart, windowEnd, requestedFrom, requestedTo, onOrderError) {
         let offset = 0;
         const seenOrderIds = new Set();
         while (true) {
             const page = await this.requestPage(account.id, account.externalAccountId, windowStart, windowEnd, offset);
-            const orders = page.results
-                .map(normalizeMercadoLivreOrder)
-                .filter((order) => {
+            const orders = [];
+            for (const rawOrder of page.results) {
+                let order;
+                try {
+                    order = normalizeMercadoLivreOrder(orderSchema.parse(rawOrder));
+                }
+                catch {
+                    if (!onOrderError) {
+                        throw new AppError_1.AppError("O Mercado Livre retornou um pedido inválido", 502);
+                    }
+                    onOrderError();
+                    continue;
+                }
                 if (!order.orderDate)
-                    return false;
+                    continue;
                 const isInsideRequestedPeriod = order.orderDate >= requestedFrom && order.orderDate <= requestedTo;
                 const isNewOrder = !seenOrderIds.has(order.externalOrderId);
                 if (isInsideRequestedPeriod && isNewOrder) {
                     seenOrderIds.add(order.externalOrderId);
-                    return true;
+                    orders.push(order);
                 }
-                return false;
-            });
+            }
             if (orders.length > 0) {
                 yield orders;
             }

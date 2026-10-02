@@ -11,7 +11,13 @@ export type MarketplacePlatform = (typeof MarketplacePlatform)[keyof typeof Mark
 export declare const ImportStatus: {
     readonly PROCESSING: 'PROCESSING';
     readonly SUCCESS: 'SUCCESS';
+    readonly PARTIAL_SUCCESS: 'PARTIAL_SUCCESS';
     readonly ERROR: 'ERROR';
 };
 export type ImportStatus = (typeof ImportStatus)[keyof typeof ImportStatus];
+export declare const DocumentType: {
+    readonly CPF: 'CPF';
+    readonly CNPJ: 'CNPJ';
+};
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 //# sourceMappingURL=enums.d.ts.map

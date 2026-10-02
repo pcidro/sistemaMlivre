@@ -22,6 +22,31 @@ const findOwnedAccount = async () => ({
     id: MARKETPLACE_ACCOUNT_ID,
     externalAccountId: "123456789",
 });
+(0, node_test_1.test)("isola pedidos malformados, preserva válidos da mesma página e continua paginação", async () => {
+    let failures = 0;
+    let requests = 0;
+    const service = new mercadoLivreOrderService_1.MercadoLivreOrderService({
+        tokenService, findOwnedAccount, nowFn: () => NOW,
+        fetchFn: async () => {
+            const results = ++requests === 1 ? [
+                { id: "1", date_created: "2026-09-10T00:00:00Z", order_items: [] },
+                { id: "2", date_created: "data inválida", order_items: [] },
+                { id: "3", date_created: "2026-09-10T00:00:00Z", order_items: [{ quantity: -1 }] },
+            ] : [{ id: "4", date_created: "2026-09-11T00:00:00Z", order_items: [] }];
+            return new Response(JSON.stringify({ results, paging: { total: 4, offset: requests === 1 ? 0 : 3, limit: 50 } }));
+        },
+    });
+    const ids = [];
+    for await (const page of service.getOrders({
+        marketplaceAccountId: MARKETPLACE_ACCOUNT_ID, userId: USER_ID,
+        dateFrom: new Date("2026-09-01T00:00:00Z"), dateTo: new Date("2026-09-30T23:59:59Z"),
+        onOrderError: () => { failures++; },
+    }))
+        ids.push(...page.map((order) => order.externalOrderId));
+    strict_1.default.deepEqual(ids, ["1", "4"]);
+    strict_1.default.equal(failures, 2);
+    strict_1.default.equal(requests, 2);
+});
 async function collectOrders(service, dateFrom = new Date("2026-09-01T00:00:00.000Z"), dateTo = new Date("2026-09-30T23:59:59.999Z")) {
     const orders = [];
     for await (const batch of service.getOrders({
