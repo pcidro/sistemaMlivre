@@ -1,9 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const express_rate_limit_1 = require("express-rate-limit");
 const authController_1 = require("../controllers/auth/authController");
+const sessionRoutes_1 = __importDefault(require("./sessionRoutes"));
 const routes = (0, express_1.Router)();
+routes.use("/auth", sessionRoutes_1.default);
 const authUserController = new authController_1.AuthUserController();
 const loginRateLimit = (0, express_rate_limit_1.rateLimit)({
     windowMs: 15 * 60 * 1000,

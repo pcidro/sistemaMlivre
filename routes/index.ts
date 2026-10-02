@@ -2,8 +2,10 @@ import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 
 import { AuthUserController } from "../controllers/auth/authController";
+import sessionRoutes from "./sessionRoutes";
 
 const routes = Router();
+routes.use("/auth", sessionRoutes);
 
 const authUserController = new AuthUserController();
 

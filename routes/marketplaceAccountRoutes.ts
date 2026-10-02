@@ -3,10 +3,13 @@ import { Router } from "express";
 import { MercadoLivreOAuthController } from "../controllers/marketplaceAccounts/mercadoLivreOAuthController";
 import { MarketplaceAccountController } from "../controllers/marketplaceAccounts/marketplaceAccountController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { createMagaluCallbackRoutes } from "./magaluCallbackRoutes";
 
 const marketplaceAccountRoutes = Router();
 const mercadoLivreOAuthController = new MercadoLivreOAuthController();
 const marketplaceAccountController = new MarketplaceAccountController();
+
+marketplaceAccountRoutes.use("/magalu", createMagaluCallbackRoutes());
 
 marketplaceAccountRoutes.get("/", isAuthenticated, (req, res) =>
   marketplaceAccountController.list(req, res),
