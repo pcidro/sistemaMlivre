@@ -24,7 +24,8 @@ export function errorHandler(
     });
   }
 
-  console.error("Internal Server Error:", err.message);
+  // Mensagens de drivers e provedores podem conter credenciais, XML ou dados pessoais.
+  console.error("Internal Server Error");
   return res.status(500).json({
     error: "Erro interno no servidor",
   });

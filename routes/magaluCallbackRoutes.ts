@@ -2,10 +2,10 @@ import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 
 import { MagaluCallbackController, sendMagaluCallbackResponse } from "../controllers/marketplaceAccounts/magaluCallbackController";
+import { isAuthenticated } from "../middlewares/isAuthenticated";
 
-export function createMagaluCallbackRoutes() {
+export function createMagaluCallbackRoutes(controller = new MagaluCallbackController()) {
   const routes = Router();
-  const controller = new MagaluCallbackController();
   const limiter = rateLimit({
     windowMs: 60_000,
     limit: 30,
@@ -15,7 +15,7 @@ export function createMagaluCallbackRoutes() {
       "Muitas tentativas de acesso. Aguarde um minuto e tente novamente."),
   });
 
-  routes.all("/callback", (_req, res, next) => {
+  routes.use((_req, res, next) => {
     res.set({
       "Cache-Control": "private, no-store",
       "Pragma": "no-cache",
@@ -27,9 +27,12 @@ export function createMagaluCallbackRoutes() {
     });
     next();
   }, limiter);
+  // HEAD não deve iniciar uma conexão nem consumir state/code.
+  routes.head(["/connect", "/callback"], (_req, res) => res.set("Allow", "GET").sendStatus(405));
+  routes.get("/connect", isAuthenticated, (req, res) => controller.connect(req, res));
   routes.get("/callback", (req, res) => controller.handle(req, res));
-  routes.all("/callback", (_req, res) => {
-    res.set("Allow", "GET, HEAD");
+  routes.all(["/connect", "/callback"], (_req, res) => {
+    res.set("Allow", "GET");
     return sendMagaluCallbackResponse(res, 405, "Método não permitido para este endereço.");
   });
   return routes;

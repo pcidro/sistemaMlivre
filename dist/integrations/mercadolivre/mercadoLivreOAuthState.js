@@ -6,6 +6,7 @@ exports.validateMercadoLivreOAuthState = validateMercadoLivreOAuthState;
 const node_crypto_1 = require("node:crypto");
 const zod_1 = require("zod");
 const AppError_1 = require("../../errors/AppError");
+const mercadoLivreOAuthError_1 = require("./mercadoLivreOAuthError");
 const STATE_DURATION_MILLISECONDS = 10 * 60 * 1000;
 const STATE_SIGNATURE_CONTEXT = "mercado-livre-oauth-state";
 exports.MERCADO_LIVRE_OAUTH_STATE_COOKIE = "ml_oauth_state";
@@ -19,7 +20,7 @@ const statePayloadSchema = zod_1.z.object({
 function getStateSigningSecret() {
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-        throw new AppError_1.AppError("Configuração de segurança OAuth ausente", 500);
+        throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("Configuração de segurança OAuth ausente", 500, "oauth_configuration");
     }
     return jwtSecret;
 }
@@ -34,8 +35,8 @@ function safelyEquals(first, second) {
     return (firstBuffer.length === secondBuffer.length &&
         (0, node_crypto_1.timingSafeEqual)(firstBuffer, secondBuffer));
 }
-function invalidState() {
-    throw new AppError_1.AppError("State OAuth inválido ou expirado", 400);
+function invalidState(code = "state_invalid") {
+    throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("State OAuth inválido ou expirado", 400, code);
 }
 function createMercadoLivreOAuthState(userId) {
     const state = (0, node_crypto_1.randomBytes)(32).toString("base64url");
@@ -52,7 +53,7 @@ function createMercadoLivreOAuthState(userId) {
 }
 function validateMercadoLivreOAuthState(receivedState, cookieValue) {
     if (!cookieValue) {
-        return invalidState();
+        return invalidState("state_missing");
     }
     const [encodedPayload, encodedSignature, ...extraParts] = cookieValue.split(".");
     if (!encodedPayload || !encodedSignature || extraParts.length > 0) {

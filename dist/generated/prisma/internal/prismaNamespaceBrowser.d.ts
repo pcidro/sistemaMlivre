@@ -27,6 +27,7 @@ export declare const JsonNull: import("@prisma/client-runtime-utils").JsonNullCl
 export declare const AnyNull: import("@prisma/client-runtime-utils").AnyNullClass;
 export declare const ModelName: {
     readonly User: 'User';
+    readonly MarketplaceOAuthState: 'MarketplaceOAuthState';
     readonly MarketplaceAccount: 'MarketplaceAccount';
     readonly Customer: 'Customer';
     readonly Order: 'Order';
@@ -54,6 +55,14 @@ export declare const UserScalarFieldEnum: {
     readonly updatedAt: 'updatedAt';
 };
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
+export declare const MarketplaceOAuthStateScalarFieldEnum: {
+    readonly stateHash: 'stateHash';
+    readonly platform: 'platform';
+    readonly userId: 'userId';
+    readonly configFingerprint: 'configFingerprint';
+    readonly expiresAt: 'expiresAt';
+};
+export type MarketplaceOAuthStateScalarFieldEnum = (typeof MarketplaceOAuthStateScalarFieldEnum)[keyof typeof MarketplaceOAuthStateScalarFieldEnum];
 export declare const MarketplaceAccountScalarFieldEnum: {
     readonly id: 'id';
     readonly platform: 'platform';

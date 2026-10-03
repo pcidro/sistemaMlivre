@@ -2,6 +2,7 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
 import { AppError } from "../../errors/AppError";
+import { MercadoLivreOAuthError, type MercadoLivreOAuthFailureCode } from "./mercadoLivreOAuthError";
 
 const STATE_DURATION_MILLISECONDS = 10 * 60 * 1000;
 const STATE_SIGNATURE_CONTEXT = "mercado-livre-oauth-state";
@@ -26,7 +27,7 @@ function getStateSigningSecret(): string {
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
-    throw new AppError("Configuração de segurança OAuth ausente", 500);
+    throw new MercadoLivreOAuthError("Configuração de segurança OAuth ausente", 500, "oauth_configuration");
   }
 
   return jwtSecret;
@@ -48,8 +49,8 @@ function safelyEquals(first: string, second: string): boolean {
   );
 }
 
-function invalidState(): never {
-  throw new AppError("State OAuth inválido ou expirado", 400);
+function invalidState(code: MercadoLivreOAuthFailureCode = "state_invalid"): never {
+  throw new MercadoLivreOAuthError("State OAuth inválido ou expirado", 400, code);
 }
 
 export function createMercadoLivreOAuthState(
@@ -77,7 +78,7 @@ export function validateMercadoLivreOAuthState(
   cookieValue: string | undefined,
 ): { userId: string } {
   if (!cookieValue) {
-    return invalidState();
+    return invalidState("state_missing");
   }
 
   const [encodedPayload, encodedSignature, ...extraParts] =

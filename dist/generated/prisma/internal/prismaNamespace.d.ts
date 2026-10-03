@@ -245,6 +245,7 @@ export type FieldRef<Model, FieldType> = runtime.FieldRef<Model, FieldType>;
 type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>;
 export declare const ModelName: {
     readonly User: 'User';
+    readonly MarketplaceOAuthState: 'MarketplaceOAuthState';
     readonly MarketplaceAccount: 'MarketplaceAccount';
     readonly Customer: 'Customer';
     readonly Order: 'Order';
@@ -263,7 +264,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "user" | "marketplaceAccount" | "customer" | "order" | "invoice" | "orderItem" | "import";
+        modelProps: "user" | "marketplaceOAuthState" | "marketplaceAccount" | "customer" | "order" | "invoice" | "orderItem" | "import";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -338,6 +339,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 count: {
                     args: Prisma.UserCountArgs<ExtArgs>;
                     result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number;
+                };
+            };
+        };
+        MarketplaceOAuthState: {
+            payload: Prisma.$MarketplaceOAuthStatePayload<ExtArgs>;
+            fields: Prisma.MarketplaceOAuthStateFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.MarketplaceOAuthStateFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.MarketplaceOAuthStateFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>;
+                };
+                findFirst: {
+                    args: Prisma.MarketplaceOAuthStateFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.MarketplaceOAuthStateFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>;
+                };
+                findMany: {
+                    args: Prisma.MarketplaceOAuthStateFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>[];
+                };
+                create: {
+                    args: Prisma.MarketplaceOAuthStateCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>;
+                };
+                createMany: {
+                    args: Prisma.MarketplaceOAuthStateCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.MarketplaceOAuthStateCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>[];
+                };
+                delete: {
+                    args: Prisma.MarketplaceOAuthStateDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>;
+                };
+                update: {
+                    args: Prisma.MarketplaceOAuthStateUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>;
+                };
+                deleteMany: {
+                    args: Prisma.MarketplaceOAuthStateDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.MarketplaceOAuthStateUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.MarketplaceOAuthStateUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>[];
+                };
+                upsert: {
+                    args: Prisma.MarketplaceOAuthStateUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketplaceOAuthStatePayload>;
+                };
+                aggregate: {
+                    args: Prisma.MarketplaceOAuthStateAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateMarketplaceOAuthState>;
+                };
+                groupBy: {
+                    args: Prisma.MarketplaceOAuthStateGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.MarketplaceOAuthStateGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.MarketplaceOAuthStateCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.MarketplaceOAuthStateCountAggregateOutputType> | number;
                 };
             };
         };
@@ -831,6 +906,14 @@ export declare const UserScalarFieldEnum: {
     readonly updatedAt: 'updatedAt';
 };
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
+export declare const MarketplaceOAuthStateScalarFieldEnum: {
+    readonly stateHash: 'stateHash';
+    readonly platform: 'platform';
+    readonly userId: 'userId';
+    readonly configFingerprint: 'configFingerprint';
+    readonly expiresAt: 'expiresAt';
+};
+export type MarketplaceOAuthStateScalarFieldEnum = (typeof MarketplaceOAuthStateScalarFieldEnum)[keyof typeof MarketplaceOAuthStateScalarFieldEnum];
 export declare const MarketplaceAccountScalarFieldEnum: {
     readonly id: 'id';
     readonly platform: 'platform';
@@ -1144,6 +1227,7 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter;
 export type GlobalOmitConfig = {
     user?: Prisma.UserOmit;
+    marketplaceOAuthState?: Prisma.MarketplaceOAuthStateOmit;
     marketplaceAccount?: Prisma.MarketplaceAccountOmit;
     customer?: Prisma.CustomerOmit;
     order?: Prisma.OrderOmit;

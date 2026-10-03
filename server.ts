@@ -8,10 +8,12 @@ import customerRoutes from "./routes/customerRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
 import cors from "cors";
 import { errorHandler } from "./middlewares/errorHandler";
+import { preventApiCaching } from "./middlewares/preventApiCaching";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+app.use("/api", preventApiCaching);
 app.use(express.json());
 
 app.use(

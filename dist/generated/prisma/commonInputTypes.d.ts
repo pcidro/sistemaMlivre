@@ -111,6 +111,15 @@ export type EnumMarketplacePlatformFilter<$PrismaModel = never> = {
     notIn?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel> | $Enums.MarketplacePlatform;
 };
+export type EnumMarketplacePlatformWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MarketplacePlatform | Prisma.EnumMarketplacePlatformFieldRefInput<$PrismaModel>;
+    in?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumMarketplacePlatformWithAggregatesFilter<$PrismaModel> | $Enums.MarketplacePlatform;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
+};
 export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
     in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null;
@@ -124,15 +133,6 @@ export type DateTimeNullableFilter<$PrismaModel = never> = {
 export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean;
-};
-export type EnumMarketplacePlatformWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MarketplacePlatform | Prisma.EnumMarketplacePlatformFieldRefInput<$PrismaModel>;
-    in?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
-    not?: Prisma.NestedEnumMarketplacePlatformWithAggregatesFilter<$PrismaModel> | $Enums.MarketplacePlatform;
-    _count?: Prisma.NestedIntFilter<$PrismaModel>;
-    _min?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
-    _max?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
 };
 export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
@@ -356,6 +356,15 @@ export type NestedEnumMarketplacePlatformFilter<$PrismaModel = never> = {
     notIn?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel> | $Enums.MarketplacePlatform;
 };
+export type NestedEnumMarketplacePlatformWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MarketplacePlatform | Prisma.EnumMarketplacePlatformFieldRefInput<$PrismaModel>;
+    in?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
+    notIn?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
+    not?: Prisma.NestedEnumMarketplacePlatformWithAggregatesFilter<$PrismaModel> | $Enums.MarketplacePlatform;
+    _count?: Prisma.NestedIntFilter<$PrismaModel>;
+    _min?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
+    _max?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
+};
 export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;
     in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel> | null;
@@ -369,15 +378,6 @@ export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
 export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>;
     not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean;
-};
-export type NestedEnumMarketplacePlatformWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MarketplacePlatform | Prisma.EnumMarketplacePlatformFieldRefInput<$PrismaModel>;
-    in?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
-    notIn?: $Enums.MarketplacePlatform[] | Prisma.ListEnumMarketplacePlatformFieldRefInput<$PrismaModel>;
-    not?: Prisma.NestedEnumMarketplacePlatformWithAggregatesFilter<$PrismaModel> | $Enums.MarketplacePlatform;
-    _count?: Prisma.NestedIntFilter<$PrismaModel>;
-    _min?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
-    _max?: Prisma.NestedEnumMarketplacePlatformFilter<$PrismaModel>;
 };
 export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel> | null;

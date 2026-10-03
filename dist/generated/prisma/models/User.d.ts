@@ -172,6 +172,7 @@ export type UserWhereInput = {
     createdAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     marketplaceAccounts?: Prisma.MarketplaceAccountListRelationFilter;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateListRelationFilter;
 };
 export type UserOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
@@ -184,6 +185,7 @@ export type UserOrderByWithRelationInput = {
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     marketplaceAccounts?: Prisma.MarketplaceAccountOrderByRelationAggregateInput;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateOrderByRelationAggregateInput;
 };
 export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string;
@@ -199,6 +201,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     createdAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     marketplaceAccounts?: Prisma.MarketplaceAccountListRelationFilter;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateListRelationFilter;
 }, "id" | "username" | "email">;
 export type UserOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
@@ -239,6 +242,7 @@ export type UserCreateInput = {
     createdAt?: Date | string;
     updatedAt?: Date | string;
     marketplaceAccounts?: Prisma.MarketplaceAccountCreateNestedManyWithoutUserInput;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateCreateNestedManyWithoutUserInput;
 };
 export type UserUncheckedCreateInput = {
     id?: string;
@@ -251,6 +255,7 @@ export type UserUncheckedCreateInput = {
     createdAt?: Date | string;
     updatedAt?: Date | string;
     marketplaceAccounts?: Prisma.MarketplaceAccountUncheckedCreateNestedManyWithoutUserInput;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateUncheckedCreateNestedManyWithoutUserInput;
 };
 export type UserUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -263,6 +268,7 @@ export type UserUpdateInput = {
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     marketplaceAccounts?: Prisma.MarketplaceAccountUpdateManyWithoutUserNestedInput;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateUpdateManyWithoutUserNestedInput;
 };
 export type UserUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -275,6 +281,7 @@ export type UserUncheckedUpdateInput = {
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     marketplaceAccounts?: Prisma.MarketplaceAccountUncheckedUpdateManyWithoutUserNestedInput;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateUncheckedUpdateManyWithoutUserNestedInput;
 };
 export type UserCreateManyInput = {
     id?: string;
@@ -342,6 +349,10 @@ export type UserMinOrderByAggregateInput = {
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
+export type UserScalarRelationFilter = {
+    is?: Prisma.UserWhereInput;
+    isNot?: Prisma.UserWhereInput;
+};
 export type UserNullableScalarRelationFilter = {
     is?: Prisma.UserWhereInput | null;
     isNot?: Prisma.UserWhereInput | null;
@@ -358,6 +369,18 @@ export type EnumUserRoleFieldUpdateOperationsInput = {
 export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string;
 };
+export type UserCreateNestedOneWithoutMarketplaceOAuthStatesInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutMarketplaceOAuthStatesInput, Prisma.UserUncheckedCreateWithoutMarketplaceOAuthStatesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketplaceOAuthStatesInput;
+    connect?: Prisma.UserWhereUniqueInput;
+};
+export type UserUpdateOneRequiredWithoutMarketplaceOAuthStatesNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutMarketplaceOAuthStatesInput, Prisma.UserUncheckedCreateWithoutMarketplaceOAuthStatesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketplaceOAuthStatesInput;
+    upsert?: Prisma.UserUpsertWithoutMarketplaceOAuthStatesInput;
+    connect?: Prisma.UserWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMarketplaceOAuthStatesInput, Prisma.UserUpdateWithoutMarketplaceOAuthStatesInput>, Prisma.UserUncheckedUpdateWithoutMarketplaceOAuthStatesInput>;
+};
 export type UserCreateNestedOneWithoutMarketplaceAccountsInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutMarketplaceAccountsInput, Prisma.UserUncheckedCreateWithoutMarketplaceAccountsInput>;
     connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketplaceAccountsInput;
@@ -372,6 +395,67 @@ export type UserUpdateOneWithoutMarketplaceAccountsNestedInput = {
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMarketplaceAccountsInput, Prisma.UserUpdateWithoutMarketplaceAccountsInput>, Prisma.UserUncheckedUpdateWithoutMarketplaceAccountsInput>;
 };
+export type UserCreateWithoutMarketplaceOAuthStatesInput = {
+    id?: string;
+    name: string;
+    username: string;
+    email: string;
+    passwordHash: string;
+    avatarUrl?: string | null;
+    role?: $Enums.UserRole;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    marketplaceAccounts?: Prisma.MarketplaceAccountCreateNestedManyWithoutUserInput;
+};
+export type UserUncheckedCreateWithoutMarketplaceOAuthStatesInput = {
+    id?: string;
+    name: string;
+    username: string;
+    email: string;
+    passwordHash: string;
+    avatarUrl?: string | null;
+    role?: $Enums.UserRole;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    marketplaceAccounts?: Prisma.MarketplaceAccountUncheckedCreateNestedManyWithoutUserInput;
+};
+export type UserCreateOrConnectWithoutMarketplaceOAuthStatesInput = {
+    where: Prisma.UserWhereUniqueInput;
+    create: Prisma.XOR<Prisma.UserCreateWithoutMarketplaceOAuthStatesInput, Prisma.UserUncheckedCreateWithoutMarketplaceOAuthStatesInput>;
+};
+export type UserUpsertWithoutMarketplaceOAuthStatesInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutMarketplaceOAuthStatesInput, Prisma.UserUncheckedUpdateWithoutMarketplaceOAuthStatesInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutMarketplaceOAuthStatesInput, Prisma.UserUncheckedCreateWithoutMarketplaceOAuthStatesInput>;
+    where?: Prisma.UserWhereInput;
+};
+export type UserUpdateToOneWithWhereWithoutMarketplaceOAuthStatesInput = {
+    where?: Prisma.UserWhereInput;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutMarketplaceOAuthStatesInput, Prisma.UserUncheckedUpdateWithoutMarketplaceOAuthStatesInput>;
+};
+export type UserUpdateWithoutMarketplaceOAuthStatesInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    username?: Prisma.StringFieldUpdateOperationsInput | string;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    marketplaceAccounts?: Prisma.MarketplaceAccountUpdateManyWithoutUserNestedInput;
+};
+export type UserUncheckedUpdateWithoutMarketplaceOAuthStatesInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    name?: Prisma.StringFieldUpdateOperationsInput | string;
+    username?: Prisma.StringFieldUpdateOperationsInput | string;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    marketplaceAccounts?: Prisma.MarketplaceAccountUncheckedUpdateManyWithoutUserNestedInput;
+};
 export type UserCreateWithoutMarketplaceAccountsInput = {
     id?: string;
     name: string;
@@ -382,6 +466,7 @@ export type UserCreateWithoutMarketplaceAccountsInput = {
     role?: $Enums.UserRole;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateCreateNestedManyWithoutUserInput;
 };
 export type UserUncheckedCreateWithoutMarketplaceAccountsInput = {
     id?: string;
@@ -393,6 +478,7 @@ export type UserUncheckedCreateWithoutMarketplaceAccountsInput = {
     role?: $Enums.UserRole;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateUncheckedCreateNestedManyWithoutUserInput;
 };
 export type UserCreateOrConnectWithoutMarketplaceAccountsInput = {
     where: Prisma.UserWhereUniqueInput;
@@ -417,6 +503,7 @@ export type UserUpdateWithoutMarketplaceAccountsInput = {
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateUpdateManyWithoutUserNestedInput;
 };
 export type UserUncheckedUpdateWithoutMarketplaceAccountsInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -428,15 +515,18 @@ export type UserUncheckedUpdateWithoutMarketplaceAccountsInput = {
     role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    marketplaceOAuthStates?: Prisma.MarketplaceOAuthStateUncheckedUpdateManyWithoutUserNestedInput;
 };
 /**
  * Count Type UserCountOutputType
  */
 export type UserCountOutputType = {
     marketplaceAccounts: number;
+    marketplaceOAuthStates: number;
 };
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     marketplaceAccounts?: boolean | UserCountOutputTypeCountMarketplaceAccountsArgs;
+    marketplaceOAuthStates?: boolean | UserCountOutputTypeCountMarketplaceOAuthStatesArgs;
 };
 /**
  * UserCountOutputType without action
@@ -453,6 +543,12 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 export type UserCountOutputTypeCountMarketplaceAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.MarketplaceAccountWhereInput;
 };
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMarketplaceOAuthStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.MarketplaceOAuthStateWhereInput;
+};
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
@@ -464,6 +560,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     createdAt?: boolean;
     updatedAt?: boolean;
     marketplaceAccounts?: boolean | Prisma.User$marketplaceAccountsArgs<ExtArgs>;
+    marketplaceOAuthStates?: boolean | Prisma.User$marketplaceOAuthStatesArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["user"]>;
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -502,6 +599,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "username" | "email" | "passwordHash" | "avatarUrl" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>;
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     marketplaceAccounts?: boolean | Prisma.User$marketplaceAccountsArgs<ExtArgs>;
+    marketplaceOAuthStates?: boolean | Prisma.User$marketplaceOAuthStatesArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {};
@@ -510,6 +608,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: "User";
     objects: {
         marketplaceAccounts: Prisma.$MarketplaceAccountPayload<ExtArgs>[];
+        marketplaceOAuthStates: Prisma.$MarketplaceOAuthStatePayload<ExtArgs>[];
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: string;
@@ -851,6 +950,7 @@ export interface UserDelegate<ExtArgs extends runtime.Types.Extensions.InternalA
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     marketplaceAccounts<T extends Prisma.User$marketplaceAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$marketplaceAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketplaceAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    marketplaceOAuthStates<T extends Prisma.User$marketplaceOAuthStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$marketplaceOAuthStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketplaceOAuthStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1282,6 +1382,29 @@ export type User$marketplaceAccountsArgs<ExtArgs extends runtime.Types.Extension
     take?: number;
     skip?: number;
     distinct?: Prisma.MarketplaceAccountScalarFieldEnum | Prisma.MarketplaceAccountScalarFieldEnum[];
+};
+/**
+ * User.marketplaceOAuthStates
+ */
+export type User$marketplaceOAuthStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MarketplaceOAuthState
+     */
+    select?: Prisma.MarketplaceOAuthStateSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the MarketplaceOAuthState
+     */
+    omit?: Prisma.MarketplaceOAuthStateOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.MarketplaceOAuthStateInclude<ExtArgs> | null;
+    where?: Prisma.MarketplaceOAuthStateWhereInput;
+    orderBy?: Prisma.MarketplaceOAuthStateOrderByWithRelationInput | Prisma.MarketplaceOAuthStateOrderByWithRelationInput[];
+    cursor?: Prisma.MarketplaceOAuthStateWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.MarketplaceOAuthStateScalarFieldEnum | Prisma.MarketplaceOAuthStateScalarFieldEnum[];
 };
 /**
  * User without action

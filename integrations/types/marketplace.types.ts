@@ -37,6 +37,17 @@ export interface MarketplaceOrder {
   items: MarketplaceOrderItem[];
 }
 
+/** Referência normalizada de um pacote; não contém dados pessoais ou NF-e. */
+export interface MarketplaceDelivery {
+  externalDeliveryId: string;
+  externalDeliveryCode: string | null;
+  externalOrderId: string;
+  marketplaceAccountId: string;
+  platform: MarketplacePlatform;
+  channelId: string;
+  status: string | null;
+}
+
 export interface GetMarketplaceOrdersOptions {
   from: Date | null;
   to: Date | null;

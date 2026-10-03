@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { AppError } from "../../errors/AppError";
 import { MercadoLivreOAuthService } from "../../integrations/mercadolivre/mercadoLivreOAuthService";
+import { MercadoLivreOAuthError, type MercadoLivreOAuthFailureCode } from "../../integrations/mercadolivre/mercadoLivreOAuthError";
 import {
   MERCADO_LIVRE_OAUTH_STATE_COOKIE,
   MERCADO_LIVRE_OAUTH_STATE_COOKIE_PATH,
@@ -44,7 +45,7 @@ function stateCookieOptions() {
   };
 }
 
-function frontendRedirectUrl(status: "success" | "error"): string {
+function frontendRedirectUrl(status: "success" | "error", reason?: MercadoLivreOAuthFailureCode): string {
   const frontendUrl = process.env.FRONTEND_URL;
 
   if (!frontendUrl) {
@@ -53,14 +54,19 @@ function frontendRedirectUrl(status: "success" | "error"): string {
 
   const redirectUrl = new URL(frontendUrl);
   redirectUrl.searchParams.set("mercadolivre", status);
+  redirectUrl.searchParams.delete("mercadolivre_error");
+  if (reason) redirectUrl.searchParams.set("mercadolivre_error", reason);
 
   return redirectUrl.toString();
 }
 
 export class MercadoLivreOAuthController {
+  constructor(
+    private readonly oauthService: Pick<MercadoLivreOAuthService, "createAuthorization" | "completeAuthorization"> = new MercadoLivreOAuthService(),
+  ) {}
+
   async connect(req: Request, res: Response) {
-    const oauthService = new MercadoLivreOAuthService();
-    const authorization = oauthService.createAuthorization(req.user_id);
+    const authorization = this.oauthService.createAuthorization(req.user_id);
 
     res.cookie(
       MERCADO_LIVRE_OAUTH_STATE_COOKIE,
@@ -91,16 +97,25 @@ export class MercadoLivreOAuthController {
       );
 
       if (typeof req.query.error === "string") {
-        throw new AppError("Autorização do Mercado Livre não concluída", 400);
+        throw new MercadoLivreOAuthError("Autorização do Mercado Livre não concluída", 400, "authorization_denied");
       }
 
-      const { code } = callbackQuerySchema.parse(req.query);
-      const oauthService = new MercadoLivreOAuthService();
-      await oauthService.completeAuthorization(code, userId);
+      const query = callbackQuerySchema.safeParse(req.query);
+      if (!query.success) {
+        throw new MercadoLivreOAuthError("Retorno de autorização inválido", 400, "callback_invalid");
+      }
+      await this.oauthService.completeAuthorization(query.data.code, userId);
 
       return res.redirect(frontendRedirectUrl("success"));
-    } catch {
-      return res.redirect(frontendRedirectUrl("error"));
+    } catch (error) {
+      const reason = error instanceof MercadoLivreOAuthError ? error.code : "unexpected";
+      // Não registrar o erro bruto: query, mensagens e stack podem conter tokens.
+      console.error("mercadolivre_oauth_callback_failed", {
+        reason,
+        upstreamStatus: error instanceof MercadoLivreOAuthError ? error.upstreamStatus : null,
+        upstreamError: error instanceof MercadoLivreOAuthError ? error.upstreamError : null,
+      });
+      return res.redirect(frontendRedirectUrl("error", reason));
     }
   }
 }

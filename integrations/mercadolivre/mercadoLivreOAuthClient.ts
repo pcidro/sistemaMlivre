@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { AppError } from "../../errors/AppError";
 import { getMercadoLivreConfig } from "./mercadoLivreConfig";
+import { MercadoLivreOAuthError, readOAuthProviderError } from "./mercadoLivreOAuthError";
 
 const MERCADO_LIVRE_AUTHORIZATION_URL =
   "https://auth.mercadolivre.com.br/authorization";
@@ -151,16 +152,19 @@ export class MercadoLivreOAuthClient {
         },
       });
     } catch {
-      throw new AppError(
+      throw new MercadoLivreOAuthError(
         "Não foi possível consultar a conta do Mercado Livre",
         502,
+        "account_lookup_failed",
       );
     }
 
     if (!response.ok) {
-      throw new AppError(
+      throw new MercadoLivreOAuthError(
         "O Mercado Livre recusou a consulta da conta autenticada",
         502,
+        "account_lookup_failed",
+        { status: response.status, error: await readOAuthProviderError(response) },
       );
     }
 
@@ -177,14 +181,12 @@ export class MercadoLivreOAuthClient {
             ? (account.identification?.number ?? null)
             : null,
       };
-    } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-
-      throw new AppError(
+    } catch {
+      throw new MercadoLivreOAuthError(
         "O Mercado Livre retornou dados de conta inválidos",
         502,
+        "account_lookup_failed",
+        { status: response.status, error: null },
       );
     }
   }
@@ -235,16 +237,19 @@ export class MercadoLivreOAuthClient {
         body,
       });
     } catch {
-      throw new AppError(
+      throw new MercadoLivreOAuthError(
         "Não foi possível comunicar com a autenticação do Mercado Livre",
         502,
+        "token_exchange_failed",
       );
     }
 
     if (!response.ok) {
-      throw new AppError(
+      throw new MercadoLivreOAuthError(
         "O Mercado Livre recusou a autenticação da conta",
         502,
+        "token_exchange_failed",
+        { status: response.status, error: await readOAuthProviderError(response) },
       );
     }
 
@@ -257,14 +262,12 @@ export class MercadoLivreOAuthClient {
         expiresInSeconds: token.expires_in,
         userId: normalizeExternalId(token.user_id),
       };
-    } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-
-      throw new AppError(
+    } catch {
+      throw new MercadoLivreOAuthError(
         "O Mercado Livre retornou credenciais OAuth inválidas",
         502,
+        "token_exchange_failed",
+        { status: response.status, error: null },
       );
     }
   }

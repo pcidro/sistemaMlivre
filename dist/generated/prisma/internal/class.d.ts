@@ -129,6 +129,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
         omit: OmitOpts;
     }>;
     /**
+     * `prisma.marketplaceOAuthState`: Exposes CRUD operations for the **MarketplaceOAuthState** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more MarketplaceOAuthStates
+      * const marketplaceOAuthStates = await prisma.marketplaceOAuthState.findMany()
+      * ```
+      */
+    get marketplaceOAuthState(): Prisma.MarketplaceOAuthStateDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    /**
      * `prisma.marketplaceAccount`: Exposes CRUD operations for the **MarketplaceAccount** model.
       * Example usage:
       * ```ts

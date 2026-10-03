@@ -4,6 +4,7 @@ exports.MercadoLivreOAuthClient = void 0;
 const zod_1 = require("zod");
 const AppError_1 = require("../../errors/AppError");
 const mercadoLivreConfig_1 = require("./mercadoLivreConfig");
+const mercadoLivreOAuthError_1 = require("./mercadoLivreOAuthError");
 const MERCADO_LIVRE_AUTHORIZATION_URL = "https://auth.mercadolivre.com.br/authorization";
 const MERCADO_LIVRE_TOKEN_URL = "https://api.mercadolibre.com/oauth/token";
 const MERCADO_LIVRE_CURRENT_USER_URL = "https://api.mercadolibre.com/users/me";
@@ -103,10 +104,10 @@ class MercadoLivreOAuthClient {
             });
         }
         catch {
-            throw new AppError_1.AppError("Não foi possível consultar a conta do Mercado Livre", 502);
+            throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("Não foi possível consultar a conta do Mercado Livre", 502, "account_lookup_failed");
         }
         if (!response.ok) {
-            throw new AppError_1.AppError("O Mercado Livre recusou a consulta da conta autenticada", 502);
+            throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("O Mercado Livre recusou a consulta da conta autenticada", 502, "account_lookup_failed", { status: response.status, error: await (0, mercadoLivreOAuthError_1.readOAuthProviderError)(response) });
         }
         try {
             const account = accountResponseSchema.parse(await response.json());
@@ -120,11 +121,8 @@ class MercadoLivreOAuthClient {
                     : null,
             };
         }
-        catch (error) {
-            if (error instanceof AppError_1.AppError) {
-                throw error;
-            }
-            throw new AppError_1.AppError("O Mercado Livre retornou dados de conta inválidos", 502);
+        catch {
+            throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("O Mercado Livre retornou dados de conta inválidos", 502, "account_lookup_failed", { status: response.status, error: null });
         }
     }
     async revokeAuthorization(externalAccountId, accessToken) {
@@ -160,10 +158,10 @@ class MercadoLivreOAuthClient {
             });
         }
         catch {
-            throw new AppError_1.AppError("Não foi possível comunicar com a autenticação do Mercado Livre", 502);
+            throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("Não foi possível comunicar com a autenticação do Mercado Livre", 502, "token_exchange_failed");
         }
         if (!response.ok) {
-            throw new AppError_1.AppError("O Mercado Livre recusou a autenticação da conta", 502);
+            throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("O Mercado Livre recusou a autenticação da conta", 502, "token_exchange_failed", { status: response.status, error: await (0, mercadoLivreOAuthError_1.readOAuthProviderError)(response) });
         }
         try {
             const token = tokenResponseSchema.parse(await response.json());
@@ -174,11 +172,8 @@ class MercadoLivreOAuthClient {
                 userId: normalizeExternalId(token.user_id),
             };
         }
-        catch (error) {
-            if (error instanceof AppError_1.AppError) {
-                throw error;
-            }
-            throw new AppError_1.AppError("O Mercado Livre retornou credenciais OAuth inválidas", 502);
+        catch {
+            throw new mercadoLivreOAuthError_1.MercadoLivreOAuthError("O Mercado Livre retornou credenciais OAuth inválidas", 502, "token_exchange_failed", { status: response.status, error: null });
         }
     }
 }

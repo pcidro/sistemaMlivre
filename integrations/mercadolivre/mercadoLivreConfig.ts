@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { AppError } from "../../errors/AppError";
+import { MercadoLivreOAuthError } from "./mercadoLivreOAuthError";
 
 const mercadoLivreConfigSchema = z.object({
   MERCADO_LIVRE_CLIENT_ID: z.string().trim().min(1),
@@ -18,9 +18,10 @@ export function getMercadoLivreConfig(): MercadoLivreConfig {
   const result = mercadoLivreConfigSchema.safeParse(process.env);
 
   if (!result.success) {
-    throw new AppError(
+    throw new MercadoLivreOAuthError(
       "Configuração OAuth do Mercado Livre ausente ou inválida",
       500,
+      "oauth_configuration",
     );
   }
 

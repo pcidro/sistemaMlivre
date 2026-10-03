@@ -26,6 +26,14 @@ const itemSchema = z.object({
   unitPrice: z.string().regex(/^\d{1,10}(?:\.\d{1,2})?$/).nullable(),
 }).strict();
 
+const invoiceSchema = z.object({
+  invoiceKey: z.string().regex(/^\d{44}$/),
+  invoiceNumber: z.string().regex(/^\d{1,9}$/),
+  customerName: nameSchema,
+  phone: phoneSchema,
+  ...documentFields,
+}).strict();
+
 const inputSchema = z.object({
   marketplaceAccountId: z.string().trim().min(1),
   userId: z.string().trim().min(1),
@@ -40,14 +48,10 @@ const inputSchema = z.object({
       })),
     items: z.array(itemSchema),
   }).strict(),
-  invoice: z.object({
-    invoiceKey: z.string().regex(/^\d{44}$/),
-    invoiceNumber: z.string().regex(/^\d{1,9}$/),
-    customerName: nameSchema,
-    phone: phoneSchema,
-    ...documentFields,
-  }).strict().nullable().optional(),
-}).strict();
+  invoice: invoiceSchema.nullable().optional(),
+  invoices: z.array(invoiceSchema).optional(),
+}).strict().refine(input => input.invoice == null || input.invoices === undefined,
+  "Informe invoice ou invoices, sem combinar os dois formatos");
 
 type ValidatedInput = z.infer<typeof inputSchema>;
 type CustomerWithOrderCount = Customer & { _count: { orders: number } };
@@ -57,12 +61,16 @@ export interface PersistImportedOrderInput {
   userId: string;
   order: MarketplaceOrder;
   invoice?: ParsedNFeData | null;
+  /** Notas já processadas do mesmo pedido; alternativa ao campo invoice. */
+  invoices?: ParsedNFeData[];
 }
 
 export interface PersistImportedOrderResult {
   orderId: string;
   customerId: string;
   invoiceId: string | null;
+  /** Presente quando a entrada utiliza invoices; IDs únicos das notas recebidas. */
+  invoiceIds?: string[];
   created: boolean;
   itemsCount: number;
   customerHasPhone: boolean;
@@ -197,15 +205,18 @@ export class ImportedOrderPersistenceService {
           },
         });
 
-    const invoiceId = input.invoice
-      ? await this.persistInvoice(tx, order.id, input.invoice)
-      : null;
+    const invoiceIds: string[] = [];
+    for (const invoice of input.invoices ?? (input.invoice ? [input.invoice] : [])) {
+      const invoiceId = await this.persistInvoice(tx, order.id, invoice);
+      if (!invoiceIds.includes(invoiceId)) invoiceIds.push(invoiceId);
+    }
     await this.syncItems(tx, order.id, input.order.items);
 
     return {
       orderId: order.id,
       customerId: customer.id,
-      invoiceId,
+      invoiceId: invoiceIds[0] ?? null,
+      ...(input.invoices === undefined ? {} : { invoiceIds }),
       created: existing === null,
       itemsCount: input.order.items.length,
       customerHasPhone: customer.normalizedPhone !== null,

@@ -1,4 +1,5 @@
 export type * from './models/User.js';
+export type * from './models/MarketplaceOAuthState.js';
 export type * from './models/MarketplaceAccount.js';
 export type * from './models/Customer.js';
 export type * from './models/Order.js';

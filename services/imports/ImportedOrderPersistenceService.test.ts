@@ -37,6 +37,36 @@ function status(code: number) {
   return (error: unknown) => error instanceof AppError && error.statusCode === code;
 }
 
+test("coleção de notas mantém formato legado e grava todos os vínculos atomicamente", async () => {
+  const { db, service } = setup();
+  const data = input();
+  const invoice = data.invoice!;
+  delete data.invoice;
+  data.invoices = [invoice, { ...invoice, invoiceKey: invoiceKey.replace("123100", "124100") }];
+  const first = await service.execute(data);
+  const second = await service.execute(data);
+  assert.deepEqual(second, { ...first, created: false });
+  assert.equal(first.invoiceIds?.length, 2);
+  assert.equal(first.invoiceId, first.invoiceIds?.[0]);
+  assert.equal(db.state.invoices.length, 2);
+  assert.ok(db.state.invoices.every(row => row.orderId === first.orderId));
+});
+
+test("invoice e invoices não podem disputar os dados fiscais da mesma chamada", async () => {
+  const { db, service } = setup();
+  const data = input(); data.invoices = [data.invoice!];
+  await assert.rejects(service.execute(data), status(422));
+  assert.equal(db.transactionAttempts, 0);
+});
+
+test("XML ou metadados externos em invoices são recusados antes da transação", async () => {
+  const { db, service } = setup();
+  const data = input(); delete data.invoice;
+  const invoices = [{ ...input().invoice!, xml: "XML-SENSIVEL", status: "approved" }];
+  await assert.rejects(service.execute({ ...data, invoices }), status(422));
+  assert.equal(db.transactionAttempts, 0);
+});
+
 for (const [document, expected, type] of [
   ["123.456.789-00", "12345678900", "CPF"],
   ["12.345.678/0001-90", "12345678000190", "CNPJ"],

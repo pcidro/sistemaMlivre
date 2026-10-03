@@ -1,12 +1,33 @@
-import { AppError } from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
-import { encryptToken } from "../../utils/tokenEncryption";
+import type { MarketplaceAccount, Prisma } from "../../generated/prisma/client";
+import { encryptToken, TokenEncryptionConfigurationError } from "../../utils/tokenEncryption";
 import { MercadoLivreOAuthClient } from "./mercadoLivreOAuthClient";
+import { MercadoLivreOAuthError } from "./mercadoLivreOAuthError";
 import { createMercadoLivreOAuthState } from "./mercadoLivreOAuthState";
+
+type ConnectedAccount = Pick<MarketplaceAccount,
+  "id" | "platform" | "name" | "cnpj" | "externalAccountId" | "tokenExpiresAt" | "isActive" | "createdAt" | "updatedAt"
+>;
+
+interface OAuthAccountStorage {
+  findUser(userId: string): Promise<{ id: string } | null>;
+  findAccount(externalAccountId: string): Promise<{ userId: string | null } | null>;
+  saveAccount(data: Prisma.MarketplaceAccountUpsertArgs): Promise<ConnectedAccount>;
+}
+
+const accountStorage: OAuthAccountStorage = {
+  findUser: (id) => prisma.user.findUnique({ where: { id }, select: { id: true } }),
+  findAccount: (externalAccountId) => prisma.marketplaceAccount.findUnique({
+    where: { platform_externalAccountId: { platform: "MERCADO_LIVRE", externalAccountId } },
+    select: { userId: true },
+  }),
+  saveAccount: (data) => prisma.marketplaceAccount.upsert(data),
+};
 
 export class MercadoLivreOAuthService {
   constructor(
     private readonly oauthClient = new MercadoLivreOAuthClient(),
+    private readonly storage: OAuthAccountStorage = accountStorage,
   ) {}
 
   createAuthorization(userId: string) {
@@ -21,13 +42,30 @@ export class MercadoLivreOAuthService {
   }
 
   async completeAuthorization(code: string, initiatedByUserId: string) {
-    const initiatingUser = await prisma.user.findUnique({
-      where: { id: initiatedByUserId },
-      select: { id: true },
-    });
+    try {
+      return await this.connectAccount(code, initiatedByUserId);
+    } catch (error) {
+      if (error instanceof MercadoLivreOAuthError) throw error;
+      if (error instanceof TokenEncryptionConfigurationError) {
+        throw new MercadoLivreOAuthError(
+          "Configuração de proteção dos tokens inválida",
+          500,
+          "encryption_configuration",
+        );
+      }
+      throw new MercadoLivreOAuthError(
+        "Não foi possível salvar a conexão do Mercado Livre",
+        500,
+        "persistence_failed",
+      );
+    }
+  }
+
+  private async connectAccount(code: string, initiatedByUserId: string) {
+    const initiatingUser = await this.storage.findUser(initiatedByUserId);
 
     if (!initiatingUser) {
-      throw new AppError("Usuário que iniciou a conexão não encontrado", 401);
+      throw new MercadoLivreOAuthError("Usuário que iniciou a conexão não encontrado", 401, "user_not_found");
     }
 
     const tokens = await this.oauthClient.exchangeAuthorizationCode(code);
@@ -36,9 +74,10 @@ export class MercadoLivreOAuthService {
     );
 
     if (account.externalAccountId !== tokens.userId) {
-      throw new AppError(
+      throw new MercadoLivreOAuthError(
         "A conta retornada pelo Mercado Livre não corresponde à autorização",
         502,
+        "account_mismatch",
       );
     }
 
@@ -46,27 +85,23 @@ export class MercadoLivreOAuthService {
       Date.now() + tokens.expiresInSeconds * 1000,
     );
 
-    const existingAccount = await prisma.marketplaceAccount.findUnique({
-      where: {
-        platform_externalAccountId: {
-          platform: "MERCADO_LIVRE",
-          externalAccountId: account.externalAccountId,
-        },
-      },
-      select: { userId: true },
-    });
+    const existingAccount = await this.storage.findAccount(account.externalAccountId);
 
     if (
       existingAccount?.userId &&
       existingAccount.userId !== initiatedByUserId
     ) {
-      throw new AppError(
+      throw new MercadoLivreOAuthError(
         "Esta conta do Mercado Livre já pertence a outro usuário",
         409,
+        "account_already_linked",
       );
     }
 
-    return prisma.marketplaceAccount.upsert({
+    const accessTokenEncrypted = encryptToken(tokens.accessToken);
+    const refreshTokenEncrypted = encryptToken(tokens.refreshToken);
+
+    return this.storage.saveAccount({
       where: {
         platform_externalAccountId: {
           platform: "MERCADO_LIVRE",
@@ -78,16 +113,16 @@ export class MercadoLivreOAuthService {
         name: account.name,
         cnpj: account.cnpj,
         externalAccountId: account.externalAccountId,
-        accessTokenEncrypted: encryptToken(tokens.accessToken),
-        refreshTokenEncrypted: encryptToken(tokens.refreshToken),
+        accessTokenEncrypted,
+        refreshTokenEncrypted,
         tokenExpiresAt,
         userId: initiatedByUserId,
       },
       update: {
         name: account.name,
         cnpj: account.cnpj,
-        accessTokenEncrypted: encryptToken(tokens.accessToken),
-        refreshTokenEncrypted: encryptToken(tokens.refreshToken),
+        accessTokenEncrypted,
+        refreshTokenEncrypted,
         tokenExpiresAt,
         isActive: true,
         userId: initiatedByUserId,

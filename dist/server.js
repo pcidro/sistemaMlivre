@@ -13,8 +13,10 @@ const customerRoutes_1 = __importDefault(require("./routes/customerRoutes"));
 const dashboardRoutes_1 = __importDefault(require("./routes/dashboardRoutes"));
 const cors_1 = __importDefault(require("cors"));
 const errorHandler_1 = require("./middlewares/errorHandler");
+const preventApiCaching_1 = require("./middlewares/preventApiCaching");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3333;
+app.use("/api", preventApiCaching_1.preventApiCaching);
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
     origin: process.env.FRONTEND_URL ?? true,

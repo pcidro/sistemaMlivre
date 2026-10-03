@@ -11,6 +11,7 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const sessionController_1 = require("../controllers/auth/sessionController");
 const errorHandler_1 = require("../middlewares/errorHandler");
 const sessionRoutes_1 = require("./sessionRoutes");
+const preventApiCaching_1 = require("../middlewares/preventApiCaching");
 (0, node_test_1.test)("sessão usa req.user_id, exige autenticação e logout limpa cookie com as opções do login", async () => {
     const previousSecret = process.env.JWT_SECRET;
     const previousEnvironment = process.env.NODE_ENV;
@@ -24,13 +25,16 @@ const sessionRoutes_1 = require("./sessionRoutes");
     const ids = [];
     const controller = new sessionController_1.SessionController(async (id) => { ids.push(id); return id === user.id ? user : null; });
     const app = (0, express_1.default)();
+    app.use("/api", preventApiCaching_1.preventApiCaching);
     app.use("/api/auth", (0, sessionRoutes_1.createSessionRoutes)(controller));
     app.use(errorHandler_1.errorHandler);
     const server = (0, node_http_1.createServer)(app);
     try {
         await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
         const base = `http://127.0.0.1:${server.address().port}/api/auth`;
-        strict_1.default.equal((await fetch(`${base}/me`)).status, 401);
+        const unauthenticated = await fetch(`${base}/me`);
+        strict_1.default.equal(unauthenticated.status, 401);
+        strict_1.default.equal(unauthenticated.headers.get("cache-control"), "private, no-store");
         strict_1.default.equal(ids.length, 0);
         const token = (0, jsonwebtoken_1.sign)({}, secret, { subject: user.id, expiresIn: "5m" });
         const response = await fetch(`${base}/me?user_id=outro`, { headers: { Cookie: `auth_token=${token}` } });

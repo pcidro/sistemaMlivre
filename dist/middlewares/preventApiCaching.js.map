@@ -1,0 +1,1 @@
+{"version":3,"file":"preventApiCaching.js","sourceRoot":"","sources":["../../middlewares/preventApiCaching.ts"],"names":[],"mappings":";;;AAEA,wFAAwF;AACjF,MAAM,iBAAiB,GAAmB,CAAC,IAAI,EAAE,GAAG,EAAE,IAAI,EAAE,EAAE;IACnE,GAAG,CAAC,GAAG,CAAC,eAAe,EAAE,mBAAmB,CAAC,CAAC;IAC9C,IAAI,EAAE,CAAC;AACT,CAAC,CAAC;AAHW,QAAA,iBAAiB,GAAjB,iBAAiB,CAG5B"}

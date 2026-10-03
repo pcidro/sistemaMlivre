@@ -8,6 +8,11 @@ export * from './enums.js';
  */
 export type User = Prisma.UserModel;
 /**
+ * Model MarketplaceOAuthState
+ *
+ */
+export type MarketplaceOAuthState = Prisma.MarketplaceOAuthStateModel;
+/**
  * Model MarketplaceAccount
  *
  */

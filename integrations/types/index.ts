@@ -3,6 +3,7 @@ export type {
   GetMarketplaceOrdersOptions,
   MarketplaceAccountData,
   MarketplaceCustomer,
+  MarketplaceDelivery,
   MarketplaceInvoice,
   MarketplaceOrder,
   MarketplaceOrderItem,

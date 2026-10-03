@@ -1,0 +1,1 @@
+{"version":3,"file":"magaluTokenResponse.d.ts","sourceRoot":"","sources":["../../../integrations/magalu/magaluTokenResponse.ts"],"names":[],"mappings":"AAEA,OAAO,EAAuB,KAAK,iBAAiB,EAAE,MAAM,qBAAqB,CAAC;AAgBlF,kFAAkF;AAClF,wBAAgB,qBAAqB,CAAC,WAAW,EAAE,MAAM,EAAE,QAAQ,EAAE,MAAM;;;;EAS1E;AAED,wBAAgB,wBAAwB,CAAC,GAAG,EAAE,OAAO,EAAE,MAAM,EAAE,iBAAiB,EAAE,GAAG,SAAa;;;;;EAejG"}

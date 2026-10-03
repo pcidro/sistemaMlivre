@@ -1,6 +1,6 @@
 # Persistência de pedidos importados
 
-`ImportedOrderPersistenceService.execute` recebe dados normalizados, sem consultar marketplaces, extrair dados do cliente ou processar XML. A coordenação e a rota estão documentadas em [MercadoLivreImportService.md](MercadoLivreImportService.md).
+`ImportedOrderPersistenceService.execute` recebe dados normalizados, sem consultar marketplaces, extrair dados do cliente ou processar XML. A coordenação e as rotas estão documentadas em [MercadoLivreImportService.md](MercadoLivreImportService.md) e [MagaluImportService.md](MagaluImportService.md). Ambas reutilizam `ImportRunner` para lotes, concorrência, contadores e status, mantendo os adapters específicos de cada plataforma.
 
 ## Contrato
 
@@ -17,6 +17,16 @@ const result = await new ImportedOrderPersistenceService().execute({
 ```
 
 `order` usa o tipo existente `MarketplaceOrder`; `invoice` usa `ParsedNFeData` do parser compartilhado e pode ser omitida ou `null`. O resultado contém IDs e contagens. `invoiceId` refere-se à nota recebida nesta chamada; é `null` se nenhuma nota foi recebida, mesmo que o pedido já possua notas salvas.
+
+Também aceita `invoices: ParsedNFeData[]`, em alternativa a `invoice` não nula.
+Todas as notas ficam na mesma transação; o resultado acrescenta `invoiceIds`
+com IDs únicos e mantém `invoiceId` como a primeira nota ou `null`. Uma coleção
+vazia não apaga notas anteriores. O formato singular usado pelo Mercado Livre
+e seu resultado permanecem compatíveis.
+
+A Magalu utiliza este serviço por
+[MagaluOrderImportService](MagaluOrderImportService.md), sem duplicar queries
+ou deduplicação. O schema já suporta MAGALU e não exige nova migration.
 
 Nomes, telefones e CPF/CNPJ são normalizados novamente na entrada. Documento ausente/inválido não apaga o existente. Datas devem ser objetos `Date` válidos; preços devem ser strings decimais não negativas com até duas casas, compatíveis com `DECIMAL(12,2)`, ou `null`. A entrada é validada com Zod. Campos extras, inclusive XML, são recusados sem imprimir o payload.
 

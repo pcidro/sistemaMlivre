@@ -45,8 +45,22 @@ model User {
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")
   marketplaceAccounts MarketplaceAccount[]
+  marketplaceOAuthStates MarketplaceOAuthState[]
 
   @@map("users")
+}
+
+// Apenas autorizações pendentes; nenhum code ou token de marketplace é salvo aqui.
+model MarketplaceOAuthState {
+  stateHash         String              @id @map("state_hash")
+  platform          MarketplacePlatform
+  userId            String              @map("user_id")
+  configFingerprint String              @map("config_fingerprint")
+  expiresAt         DateTime            @map("expires_at")
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("marketplace_oauth_states")
 }
 
 model MarketplaceAccount {

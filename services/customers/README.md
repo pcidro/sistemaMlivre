@@ -12,6 +12,12 @@ Se nenhuma fonte fornecer um telefone que possa ser normalizado, o resultado con
 
 As fontes são funções fornecidas pelo chamador, permitindo reutilizar a regra com os serviços existentes sem colocar lógica específica do marketplace no serviço de extração. Se os dados do destinatário já foram obtidos, `getRecipient` pode simplesmente retornar esse objeto.
 
+As funções puras `normalizeCustomerData` e `mergeCustomerData` estão em
+`customerData.ts` e são reutilizadas pelo serviço Magalu. O fluxo acima preserva
+o comportamento existente do Mercado Livre. A Magalu possui composição própria
+com o pedido como fonte principal, fallback também para nome ausente e proteção
+contra falhas fiscais: consulte [CUSTOMERS.md](../../integrations/magalu/CUSTOMERS.md).
+
 ## Uso com os serviços existentes
 
 ```ts

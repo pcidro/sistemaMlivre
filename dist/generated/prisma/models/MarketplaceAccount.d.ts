@@ -472,9 +472,6 @@ export type MarketplaceAccountUncheckedUpdateManyWithoutUserNestedInput = {
     updateMany?: Prisma.MarketplaceAccountUpdateManyWithWhereWithoutUserInput | Prisma.MarketplaceAccountUpdateManyWithWhereWithoutUserInput[];
     deleteMany?: Prisma.MarketplaceAccountScalarWhereInput | Prisma.MarketplaceAccountScalarWhereInput[];
 };
-export type EnumMarketplacePlatformFieldUpdateOperationsInput = {
-    set?: $Enums.MarketplacePlatform;
-};
 export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null;
 };
