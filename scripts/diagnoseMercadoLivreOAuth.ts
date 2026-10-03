@@ -7,7 +7,7 @@ import { MercadoLivreOAuthError } from "../integrations/mercadolivre/mercadoLivr
 async function main() {
   const configuration = getMercadoLivreOAuthDiagnostics();
   if (!process.argv.includes("--probe")) {
-    console.log(JSON.stringify(configuration, null, 2));
+    console.log("mercadolivre_oauth_diagnostic", JSON.stringify(configuration));
     return;
   }
 
@@ -20,13 +20,13 @@ async function main() {
 
   try {
     await client.exchangeAuthorizationCode(`invalid-ml-diagnostic-${randomUUID()}`);
-    console.log(JSON.stringify({ configuration, tokenProbe: { unexpectedAcceptance: true } }, null, 2));
+    console.log("mercadolivre_oauth_diagnostic", JSON.stringify({ configuration, tokenProbe: { unexpectedAcceptance: true } }));
   } catch (error) {
-    console.log(JSON.stringify({ configuration, tokenProbe: {
+    console.log("mercadolivre_oauth_diagnostic", JSON.stringify({ configuration, tokenProbe: {
       reason: error instanceof MercadoLivreOAuthError ? error.code : "unexpected",
       upstreamStatus: error instanceof MercadoLivreOAuthError ? error.upstreamStatus : null,
       upstreamError: error instanceof MercadoLivreOAuthError ? error.upstreamError : null,
-    } }, null, 2));
+    } }));
   }
 }
 
