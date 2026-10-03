@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { AppError } from "../../errors/AppError";
 import { MercadoLivreOAuthService } from "../../integrations/mercadolivre/mercadoLivreOAuthService";
+import { getMercadoLivreCredentialDiagnostics } from "../../integrations/mercadolivre/mercadoLivreConfig";
 import { MercadoLivreOAuthError, type MercadoLivreOAuthFailureCode } from "../../integrations/mercadolivre/mercadoLivreOAuthError";
 import {
   MERCADO_LIVRE_OAUTH_STATE_COOKIE,
@@ -114,6 +115,9 @@ export class MercadoLivreOAuthController {
         reason,
         upstreamStatus: error instanceof MercadoLivreOAuthError ? error.upstreamStatus : null,
         upstreamError: error instanceof MercadoLivreOAuthError ? error.upstreamError : null,
+        ...(error instanceof MercadoLivreOAuthError && error.upstreamError === "invalid_client"
+          ? { credentialCheck: getMercadoLivreCredentialDiagnostics() }
+          : {}),
       });
       return res.redirect(frontendRedirectUrl("error", reason));
     }

@@ -3,6 +3,7 @@ import { afterEach, beforeEach, test } from "node:test";
 
 import { AppError } from "../../errors/AppError";
 import { MercadoLivreOAuthClient } from "./mercadoLivreOAuthClient";
+import { getMercadoLivreCredentialDiagnostics, getMercadoLivreOAuthDiagnostics } from "./mercadoLivreConfig";
 import {
   createMercadoLivreOAuthState,
   validateMercadoLivreOAuthState,
@@ -13,6 +14,7 @@ const environmentKeys = [
   "MERCADO_LIVRE_CLIENT_ID",
   "MERCADO_LIVRE_CLIENT_SECRET",
   "MERCADO_LIVRE_REDIRECT_URI",
+  "FRONTEND_URL",
 ] as const;
 
 const originalEnvironment = Object.fromEntries(
@@ -148,6 +150,72 @@ test("renova o token e preserva o novo refresh token retornado", async () => {
 
   assert.equal(tokenSet.accessToken, "new-access-token");
   assert.equal(tokenSet.refreshToken, "new-refresh-token");
+});
+
+test("diagnóstico identifica cópia malformada sem retornar Secret, código ou fingerprint", () => {
+  process.env.MERCADO_LIVRE_CLIENT_ID = "123456789";
+  process.env.MERCADO_LIVRE_CLIENT_SECRET = '"secret-ficticio\u200b com espaços"';
+  const diagnostics = getMercadoLivreCredentialDiagnostics();
+  assert.equal(diagnostics.clientId, "123456789");
+  assert.equal(diagnostics.secretHasWhitespace, true);
+  assert.equal(diagnostics.secretHasNonAscii, true);
+  assert.equal(diagnostics.secretHasQuotes, true);
+  assert.equal(diagnostics.secretLooksMasked, false);
+  assert.ok(!JSON.stringify(diagnostics).includes("secret-ficticio"));
+  assert.deepEqual(Object.keys(diagnostics).sort(), ["clientId", "clientIdLooksValid", "secretLength", "secretHasWhitespace", "secretHasNonAscii", "secretHasQuotes", "secretLooksMasked"].sort());
+  process.env.MERCADO_LIVRE_CLIENT_SECRET = "••••••••";
+  assert.equal(getMercadoLivreCredentialDiagnostics().secretLooksMasked, true);
+  process.env.MERCADO_LIVRE_CLIENT_ID = "secret-colado-no-campo-id";
+  assert.equal(getMercadoLivreCredentialDiagnostics().clientId, null);
+  assert.ok(!JSON.stringify(getMercadoLivreCredentialDiagnostics()).includes("secret-colado-no-campo-id"));
+});
+
+test("diagnóstico detecta callback em outro domínio sem expor URLs ou valores sensíveis", () => {
+  process.env.FRONTEND_URL = "https://frontend.example";
+  process.env.MERCADO_LIVRE_REDIRECT_URI = "https://backend.example/api/marketplace-accounts/mercadolivre/callback";
+  const diagnostics = getMercadoLivreOAuthDiagnostics();
+  assert.equal(diagnostics.callbackUsesFrontendOrigin, false);
+  assert.equal(diagnostics.callbackUsesExpectedPath, true);
+  assert.equal(diagnostics.callbackUsesHttps, true);
+  process.env.MERCADO_LIVRE_REDIRECT_URI = "https://frontend.example/api/marketplace-accounts/mercadolivre/callback";
+  assert.equal(getMercadoLivreOAuthDiagnostics().callbackUsesFrontendOrigin, true);
+  process.env.MERCADO_LIVRE_REDIRECT_URI = "https://private-user:private-password@backend.example/private-path?code=private-code#private-fragment";
+  const unsafeUrlDiagnostics = getMercadoLivreOAuthDiagnostics();
+  assert.equal(unsafeUrlDiagnostics.callbackHasUrlCredentials, true);
+  assert.equal(unsafeUrlDiagnostics.callbackHasQueryOrFragment, true);
+  assert.equal(unsafeUrlDiagnostics.callbackUsesExpectedPath, false);
+  const output = JSON.stringify(unsafeUrlDiagnostics);
+  for (const value of ["private-user", "private-password", "private-path", "private-code", "private-fragment", "client-secret-for-tests", "jwt-secret-for-tests"]) {
+    assert.ok(!output.includes(value));
+  }
+});
+
+test("diagnóstico trata variáveis ausentes ou inválidas sem ecoar a entrada", () => {
+  process.env.FRONTEND_URL = "not-a-url-private";
+  process.env.MERCADO_LIVRE_REDIRECT_URI = "invalid-redirect-private";
+  delete process.env.JWT_SECRET;
+  delete process.env.MERCADO_LIVRE_CLIENT_SECRET;
+  const diagnostics = getMercadoLivreOAuthDiagnostics();
+  assert.equal(diagnostics.oauthVariablesValid, false);
+  assert.equal(diagnostics.frontendUrlValid, false);
+  assert.equal(diagnostics.callbackUrlValid, false);
+  assert.equal(diagnostics.callbackUsesFrontendOrigin, null);
+  assert.equal(diagnostics.jwtSecretConfigured, false);
+  assert.ok(!JSON.stringify(diagnostics).includes("private"));
+});
+
+test("envia exatamente o mesmo ID, Secret e redirect na troca do código, incluindo caracteres especiais", async () => {
+  const fakeSecret = "secret-ficticio+&=/";
+  process.env.MERCADO_LIVRE_CLIENT_SECRET = fakeSecret;
+  const client = new MercadoLivreOAuthClient((async (_url, init) => {
+    assert.ok(init?.body instanceof URLSearchParams);
+    const body = new URLSearchParams(init.body.toString());
+    assert.equal(body.get("client_id"), process.env.MERCADO_LIVRE_CLIENT_ID);
+    assert.equal(body.get("client_secret"), fakeSecret);
+    assert.equal(body.get("redirect_uri"), process.env.MERCADO_LIVRE_REDIRECT_URI);
+    return Response.json({ access_token: "access-ficticio", refresh_token: "refresh-ficticio", user_id: 123, expires_in: 3600 });
+  }) as typeof fetch);
+  await client.exchangeAuthorizationCode("code-ficticio");
 });
 
 test("revoga a autorização sem enviar o token pela URL", async () => {

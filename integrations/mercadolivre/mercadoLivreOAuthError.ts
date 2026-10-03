@@ -23,6 +23,8 @@ const providerErrorSchema = z.enum([
   "invalid_scope",
   "invalid_request",
   "unsupported_grant_type",
+  "unauthorized_client",
+  "unauthorized_application",
   "invalid_operator_user_id",
   "access_denied",
   "forbidden",

@@ -121,6 +121,8 @@ const failures = [
   { reason: "callback_invalid", missingCode: true },
   { reason: "token_exchange_failed", tokenError: "invalid_client" },
   { reason: "token_exchange_failed", tokenError: "invalid_grant" },
+  { reason: "token_exchange_failed", tokenError: "unauthorized_client" },
+  { reason: "token_exchange_failed", tokenError: "unauthorized_application" },
   { reason: "token_exchange_failed", tokenError: "unrecognized-secret-never-log" },
   { reason: "account_lookup_failed", accountStatus: 403 },
   { reason: "account_already_linked", ownerId: "another-local-user" },
@@ -129,7 +131,7 @@ const failures = [
 ] as const;
 
 for (const failure of failures) {
-  test(`callback identifica ${failure.reason}${"tokenError" in failure ? ` (${failure.tokenError.startsWith("invalid_") ? failure.tokenError : "código desconhecido"})` : ""} sem vazar dados`, async (context) => {
+  test(`callback identifica ${failure.reason}${"tokenError" in failure ? ` (${failure.tokenError === "unrecognized-secret-never-log" ? "código desconhecido" : failure.tokenError})` : ""} sem vazar dados`, async (context) => {
     context.mock.method(storage, "findAccount", async () => "ownerId" in failure ? { userId: failure.ownerId } : null);
     const save = context.mock.method(storage, "saveAccount", async () => {
       if ("databaseFails" in failure) throw new Error(`Database error ${fakeAccessToken}`);
@@ -156,7 +158,14 @@ for (const failure of failures) {
       assert.equal(log.reason, failure.reason);
       if ("tokenError" in failure) {
         assert.equal(log.upstreamStatus, 400);
-        assert.equal(log.upstreamError, failure.tokenError.startsWith("invalid_") ? failure.tokenError : null);
+        assert.equal(log.upstreamError, failure.tokenError === "unrecognized-secret-never-log" ? null : failure.tokenError);
+        if (failure.tokenError === "invalid_client") {
+          assert.equal(log.credentialCheck.clientId, "123");
+          assert.equal(log.credentialCheck.secretHasQuotes, false);
+          assert.equal(log.credentialCheck.secretLooksMasked, false);
+        } else {
+          assert.equal(log.credentialCheck, undefined);
+        }
       }
       const output = JSON.stringify(logger.mock.calls.map((call) => call.arguments)) + location + await response.text();
       for (const secret of [fakeAccessToken, fakeRefreshToken, fakeCode, "client-secret-never-log", "state-signing-secret-never-log", "unrecognized-secret-never-log", "invalid-key-never-log"]) assert.ok(!output.includes(secret));

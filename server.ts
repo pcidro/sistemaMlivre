@@ -9,10 +9,12 @@ import dashboardRoutes from "./routes/dashboardRoutes";
 import cors from "cors";
 import { errorHandler } from "./middlewares/errorHandler";
 import { preventApiCaching } from "./middlewares/preventApiCaching";
+import { configureProxy } from "./utils/configureProxy";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+configureProxy(app);
 app.use("/api", preventApiCaching);
 app.use(express.json());
 
