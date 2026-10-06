@@ -10,6 +10,7 @@ import cors from "cors";
 import { errorHandler } from "./middlewares/errorHandler";
 import { preventApiCaching } from "./middlewares/preventApiCaching";
 import { configureProxy } from "./utils/configureProxy";
+import { logDatabaseSchemaDiagnostic } from "./utils/databaseSchemaDiagnostic";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -40,4 +41,5 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`  Backend is running on http://localhost:${PORT}`);
+  void logDatabaseSchemaDiagnostic();
 });
