@@ -46,6 +46,9 @@ export class MercadoLivreOAuthService {
       return await this.connectAccount(code, initiatedByUserId);
     } catch (error) {
       if (error instanceof MercadoLivreOAuthError) throw error;
+      if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
+        throw new MercadoLivreOAuthError("Esta conta do Mercado Livre já pertence a outro usuário", 409, "account_already_linked");
+      }
       if (error instanceof TokenEncryptionConfigurationError) {
         throw new MercadoLivreOAuthError(
           "Configuração de proteção dos tokens inválida",
@@ -103,6 +106,8 @@ export class MercadoLivreOAuthService {
 
     return this.storage.saveAccount({
       where: {
+        // Revalida o dono na escrita, inclusive em callbacks concorrentes.
+        OR: [{ userId: initiatedByUserId }, { userId: null }],
         platform_externalAccountId: {
           platform: "MERCADO_LIVRE",
           externalAccountId: account.externalAccountId,

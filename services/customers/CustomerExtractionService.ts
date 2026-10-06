@@ -6,6 +6,7 @@ import { mergeCustomerData, normalizeCustomerData } from "./customerData";
 export interface CustomerExtractionSources {
   getRecipient(): Promise<MarketplaceCustomer>;
   getInvoiceXml(): Promise<string | null>;
+  onInvoiceError?(): void;
 }
 
 /** Combina dados do pedido/envio e da NF-e, sem persistência. */
@@ -20,13 +21,18 @@ export class CustomerExtractionService {
 
     if (customer.phone !== null && customer.document !== null) return customer;
 
-    const xml = await sources.getInvoiceXml();
-    if (xml === null) return customer;
-
-    const invoice = this.nfeParser.parse(xml);
-    return mergeCustomerData(customer, {
-      name: invoice.customerName, phone: invoice.phone,
-      document: invoice.document, documentType: invoice.documentType,
-    });
+    try {
+      const xml = await sources.getInvoiceXml();
+      if (xml === null) return customer;
+      const invoice = this.nfeParser.parse(xml);
+      return mergeCustomerData(customer, {
+        name: invoice.customerName, phone: invoice.phone,
+        document: invoice.document, documentType: invoice.documentType,
+      });
+    } catch (error) {
+      if (!sources.onInvoiceError) throw error;
+      sources.onInvoiceError();
+      return customer;
+    }
   }
 }

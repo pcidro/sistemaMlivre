@@ -149,12 +149,26 @@ for (const stage of ["recipient", "invoice", "xml", "persistence"] as const) {
     const result = await new MercadoLivreImportService({ ...dependencies, concurrency: 1 }).execute(input);
     assert.equal(result.status, "PARTIAL_SUCCESS");
     assert.equal(result.ordersFound, 2);
-    assert.equal(result.ordersProcessed, 1);
+    const optionalInvoiceFailure = stage === "invoice" || stage === "xml";
+    assert.equal(result.ordersProcessed, optionalInvoiceFailure ? 2 : 1);
     assert.equal(result.errorsCount, 1);
-    assert.deepEqual(saved.map((data) => data.order.externalOrderId), ["1"]);
+    assert.deepEqual(saved.map((data) => data.order.externalOrderId), optionalInvoiceFailure ? ["2", "1"] : ["1"]);
     assert.equal(JSON.stringify(result).includes("privado"), false);
   });
 }
+
+test("NF-e sem autorização preserva nome e pedido, com telefone/documento nulos e erro contabilizado", async () => {
+  const { dependencies, saved } = setup([[order("2")]]);
+  dependencies.invoices.getInvoiceXml = async () => { throw new AppError("Consulta fiscal sem permissão", 403); };
+  const result = await new MercadoLivreImportService(dependencies).execute(input);
+  assert.equal(result.status, "PARTIAL_SUCCESS");
+  assert.equal(result.ordersProcessed, 1);
+  assert.equal(result.errorsCount, 1);
+  assert.equal(saved[0]?.order.customer.name, "Maria Fictícia");
+  assert.equal(saved[0]?.order.customer.phone, null);
+  assert.equal(saved[0]?.order.customer.document, null);
+  assert.equal(saved[0]?.invoice, null);
+});
 
 test("todos os pedidos falham: ERROR, sem contagem de clientes salvos", async () => {
   const { dependencies } = setup();

@@ -60,3 +60,12 @@ test("repository: progresso/finalização atualizam os cinco contadores e seleci
     where: { id: "import-test" }, data: update, select: Object.fromEntries(Object.keys(summary).map(key => [key, true])),
   } });
 });
+
+test("finalização ML exige PROCESSING: execução interrompida não pode sobrescrever ERROR", async () => {
+  const db = database();
+  await new ImportRepository("MERCADO_LIVRE", db.mock).update("import-test", {
+    ordersFound: 0, ordersProcessed: 0, customersWithPhone: 0, customersWithoutPhone: 0, errorsCount: 0,
+    status: "SUCCESS", finishedAt: new Date(),
+  });
+  assert.deepEqual((db.calls[0]?.input as { where: unknown }).where, { id: "import-test", status: "PROCESSING" });
+});

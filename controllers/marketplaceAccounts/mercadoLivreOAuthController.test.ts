@@ -49,6 +49,8 @@ interface FixtureOptions {
   tokenError?: string;
   tokenStatus?: number;
   accountStatus?: number;
+  onSync?: (accountId: string, userId: string) => void;
+  syncFails?: boolean;
 }
 
 async function withApi(work: (url: string) => Promise<void>, options: FixtureOptions = {}) {
@@ -61,7 +63,14 @@ async function withApi(work: (url: string) => Promise<void>, options: FixtureOpt
     if (options.accountStatus) return Response.json({ error: "forbidden", message: fakeAccessToken }, { status: options.accountStatus });
     return Response.json({ id: 123, nickname: "Loja fictícia" });
   }) as typeof fetch;
-  const controller = new MercadoLivreOAuthController(new MercadoLivreOAuthService(new MercadoLivreOAuthClient(fetchFn), storage));
+  const controller = new MercadoLivreOAuthController(new MercadoLivreOAuthService(new MercadoLivreOAuthClient(fetchFn), storage), {
+    async start(accountId, initiatedBy) {
+      options.onSync?.(accountId, initiatedBy);
+      if (options.syncFails) throw new Error(fakeRefreshToken);
+      return { id: "import-test", marketplaceAccountId: accountId, status: "PROCESSING", startedAt: new Date(), finishedAt: null,
+        ordersFound: 0, ordersProcessed: 0, customersWithPhone: 0, customersWithoutPhone: 0, errorsCount: 0 };
+    },
+  });
   const app = express();
   app.get("/connect", (req, res) => { req.user_id = userId; return controller.connect(req, res); });
   app.get("/callback", (req, res) => controller.callback(req, res));
@@ -99,6 +108,7 @@ test("conexão emite cookie seguro e usa o callback do frontend", async () => {
 test("callback salva tokens criptografados e sinaliza sucesso somente após persistir", async (context) => {
   const save = context.mock.method(storage, "saveAccount", async (args: Prisma.MarketplaceAccountUpsertArgs) => {
     assert.equal(args.create.userId, userId);
+    assert.deepEqual(args.where.OR, [{ userId }, { userId: null }]);
     assert.ok(typeof args.create.accessTokenEncrypted === "string");
     assert.ok(typeof args.create.refreshTokenEncrypted === "string");
     assert.equal(decryptToken(args.create.accessTokenEncrypted), fakeAccessToken);
@@ -108,10 +118,14 @@ test("callback salva tokens criptografados e sinaliza sucesso somente após pers
   });
   await withApi(async (url) => {
     const response = await callbackRequest(url);
-    assert.equal(response.headers.get("location"), "https://frontend.example/?mercadolivre=success");
+    assert.equal(response.headers.get("location"), "https://frontend.example/marketplace-accounts?mercadolivre=success&import_id=import-test");
     assert.match(response.headers.get("set-cookie") ?? "", /Expires=Thu, 01 Jan 1970/);
     assert.equal(save.mock.callCount(), 1);
-  });
+  }, { onSync: (accountId, initiatedBy) => {
+    assert.equal(save.mock.callCount(), 1);
+    assert.equal(accountId, connectedAccount.id);
+    assert.equal(initiatedBy, userId);
+  } });
 });
 
 const failures = [
@@ -170,8 +184,20 @@ for (const failure of failures) {
       const output = JSON.stringify(logger.mock.calls.map((call) => call.arguments)) + location + await response.text();
       for (const secret of [fakeAccessToken, fakeRefreshToken, fakeCode, "client-secret-never-log", "state-signing-secret-never-log", "unrecognized-secret-never-log", "invalid-key-never-log"]) assert.ok(!output.includes(secret));
     }, {
+      onSync: () => { assert.fail("Callback inválido não pode iniciar sincronização"); },
       ...("tokenError" in failure ? { tokenError: failure.tokenError } : {}),
       ...("accountStatus" in failure ? { accountStatus: failure.accountStatus } : {}),
     });
   });
 }
+
+test("falha ao iniciar importação preserva OAuth salvo, sinaliza sucesso e não vaza erro", async context => {
+  const logger = context.mock.method(console, "error", () => {});
+  await withApi(async url => {
+    const response = await callbackRequest(url);
+    const location = response.headers.get("location")!;
+    assert.equal(new URL(location).searchParams.get("mercadolivre"), "success");
+    assert.equal(new URL(location).searchParams.get("sync_error"), "start_failed");
+    assert.ok(!JSON.stringify(logger.mock.calls).includes(fakeRefreshToken));
+  }, { syncFails: true });
+});

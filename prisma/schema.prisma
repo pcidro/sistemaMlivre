@@ -72,6 +72,7 @@ model MarketplaceAccount {
   accessTokenEncrypted  String              @map("access_token_encrypted") @db.Text
   refreshTokenEncrypted String?             @map("refresh_token_encrypted") @db.Text
   tokenExpiresAt        DateTime?           @map("token_expires_at")
+  lastSyncAt            DateTime?           @map("last_sync_at")
   isActive              Boolean             @default(true) @map("is_active")
   createdAt             DateTime            @default(now()) @map("created_at")
   updatedAt             DateTime            @updatedAt @map("updated_at")
@@ -157,6 +158,10 @@ model Import {
   status                ImportStatus        @default(PROCESSING)
   startedAt             DateTime            @default(now()) @map("started_at")
   finishedAt            DateTime?           @map("finished_at")
+  dateFrom              DateTime?           @map("date_from")
+  dateTo                DateTime?           @map("date_to")
+  automatic             Boolean             @default(false)
+  updatedAt             DateTime            @default(now()) @updatedAt @map("updated_at")
   ordersFound           Int                 @default(0) @map("orders_found")
   ordersProcessed       Int                 @default(0) @map("orders_processed")
   customersWithPhone    Int                 @default(0) @map("customers_with_phone")

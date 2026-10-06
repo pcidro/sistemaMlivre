@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
+import { mercadoLivreSyncService, type MercadoLivreSyncService } from "../../services/imports/MercadoLivreSyncService";
 
 import { AppError } from "../../errors/AppError";
 import { MercadoLivreOAuthService } from "../../integrations/mercadolivre/mercadoLivreOAuthService";
@@ -46,7 +47,7 @@ function stateCookieOptions() {
   };
 }
 
-function frontendRedirectUrl(status: "success" | "error", reason?: MercadoLivreOAuthFailureCode): string {
+function frontendRedirectUrl(status: "success" | "error", reason?: MercadoLivreOAuthFailureCode): URL {
   const frontendUrl = process.env.FRONTEND_URL;
 
   if (!frontendUrl) {
@@ -54,16 +55,18 @@ function frontendRedirectUrl(status: "success" | "error", reason?: MercadoLivreO
   }
 
   const redirectUrl = new URL(frontendUrl);
+  redirectUrl.pathname = `${redirectUrl.pathname.replace(/\/$/, "")}/marketplace-accounts`;
   redirectUrl.searchParams.set("mercadolivre", status);
   redirectUrl.searchParams.delete("mercadolivre_error");
   if (reason) redirectUrl.searchParams.set("mercadolivre_error", reason);
 
-  return redirectUrl.toString();
+  return redirectUrl;
 }
 
 export class MercadoLivreOAuthController {
   constructor(
     private readonly oauthService: Pick<MercadoLivreOAuthService, "createAuthorization" | "completeAuthorization"> = new MercadoLivreOAuthService(),
+    private readonly syncService: Pick<MercadoLivreSyncService, "start"> = mercadoLivreSyncService,
   ) {}
 
   async connect(req: Request, res: Response) {
@@ -105,9 +108,17 @@ export class MercadoLivreOAuthController {
       if (!query.success) {
         throw new MercadoLivreOAuthError("Retorno de autorização inválido", 400, "callback_invalid");
       }
-      await this.oauthService.completeAuthorization(query.data.code, userId);
+      const account = await this.oauthService.completeAuthorization(query.data.code, userId);
+      const redirect = frontendRedirectUrl("success");
+      try {
+        const sync = await this.syncService.start(account.id, userId);
+        redirect.searchParams.set("import_id", sync.id);
+      } catch {
+        console.error("mercadolivre_sync_start_failed", { accountId: account.id });
+        redirect.searchParams.set("sync_error", "start_failed");
+      }
 
-      return res.redirect(frontendRedirectUrl("success"));
+      return res.redirect(redirect.toString());
     } catch (error) {
       const reason = error instanceof MercadoLivreOAuthError ? error.code : "unexpected";
       // Não registrar o erro bruto: query, mensagens e stack podem conter tokens.
@@ -119,7 +130,7 @@ export class MercadoLivreOAuthController {
           ? { credentialCheck: getMercadoLivreCredentialDiagnostics() }
           : {}),
       });
-      return res.redirect(frontendRedirectUrl("error", reason));
+      return res.redirect(frontendRedirectUrl("error", reason).toString());
     }
   }
 }

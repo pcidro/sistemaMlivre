@@ -46,7 +46,7 @@ export class ImportRunner {
     }
   }
 
-  async execute(input: MarketplaceImportInput): Promise<ImportSummary> {
+  async execute(input: MarketplaceImportInput, registered?: ImportSummary): Promise<ImportSummary> {
     const parsed = inputSchema.safeParse(input);
     if (!parsed.success) throw new AppError("Dados da importação inválidos", 400);
     input = parsed.data;
@@ -62,7 +62,7 @@ export class ImportRunner {
     }
     this.activeAccounts.add(input.marketplaceAccountId);
     try {
-      return await this.run(input);
+      return await this.run(input, registered);
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError("Não foi possível registrar o resultado da importação", 503);
@@ -71,9 +71,20 @@ export class ImportRunner {
     }
   }
 
-  private async run(input: MarketplaceImportInput): Promise<ImportSummary> {
+  private async run(input: MarketplaceImportInput, registered?: ImportSummary): Promise<ImportSummary> {
     const { storage } = this.options;
-    const record = await storage.create(input.marketplaceAccountId);
+    const record = registered ?? await storage.create(input.marketplaceAccountId);
+    if (record.marketplaceAccountId !== input.marketplaceAccountId || record.status !== "PROCESSING") {
+      throw new AppError("Registro da importação inválido", 400);
+    }
+    let leaseLost = false;
+    let touching = false;
+    const heartbeat = storage.touch ? setInterval(() => {
+      if (touching) return;
+      touching = true;
+      void storage.touch!(record.id).catch(() => { leaseLost = true; }).finally(() => { touching = false; });
+    }, 30_000) : undefined;
+    heartbeat?.unref();
     const counters: ImportCounters = {
       ordersFound: 0, ordersProcessed: 0, customersWithPhone: 0, customersWithoutPhone: 0, errorsCount: 0,
     };
@@ -81,6 +92,7 @@ export class ImportRunner {
     const seen = new Set<string>();
     try {
       for await (const page of this.options.getOrders(input, () => { counters.ordersFound++; counters.errorsCount++; })) {
+        if (leaseLost) throw new AppError("Importação interrompida", 503);
         const unique = page.filter(order => {
           if (seen.has(order.externalOrderId)) return false;
           seen.add(order.externalOrderId);
@@ -89,6 +101,7 @@ export class ImportRunner {
         counters.ordersFound += unique.length;
         await storage.update(record.id, { ...counters });
         for (let start = 0; start < unique.length; start += this.batchSize) {
+          if (leaseLost) throw new AppError("Importação interrompida", 503);
           await this.processBatch(unique.slice(start, start + this.batchSize), input, counters);
           await storage.update(record.id, { ...counters });
         }
@@ -96,6 +109,8 @@ export class ImportRunner {
     } catch {
       // Paginação/progresso indisponíveis: dados já salvos permanecem válidos.
       counters.errorsCount++;
+    } finally {
+      if (heartbeat) clearInterval(heartbeat);
     }
     const status = counters.errorsCount === 0 ? "SUCCESS" : counters.ordersProcessed > 0 ? "PARTIAL_SUCCESS" : "ERROR";
     return storage.update(record.id, { ...counters, status, finishedAt: this.nowFn() });

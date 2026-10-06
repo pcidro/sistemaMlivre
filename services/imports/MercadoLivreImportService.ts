@@ -46,24 +46,26 @@ export class MercadoLivreImportService {
     this.runner = new ImportRunner({
       platformName: "Mercado Livre", storage: dependencies.storage ?? new ImportRepository(),
       getOrders: (input, onOrderError) => orders.getOrders({ ...input, onOrderError }),
-      processOrder: async (order, input) => ({ customerHasPhone: await this.processOrder(order, input) }),
+      processOrder: (order, input) => this.processOrder(order, input),
       ...(dependencies.concurrency === undefined ? {} : { concurrency: dependencies.concurrency }),
       ...(dependencies.batchSize === undefined ? {} : { batchSize: dependencies.batchSize }),
       ...(dependencies.nowFn === undefined ? {} : { nowFn: dependencies.nowFn }),
     });
   }
 
-  async execute(input: MercadoLivreImportInput): Promise<ImportSummary> {
-    return this.runner.execute(input);
+  async execute(input: MercadoLivreImportInput, registered?: ImportSummary): Promise<ImportSummary> {
+    return this.runner.execute(input, registered);
   }
 
-  private async processOrder(order: MarketplaceOrder, input: MercadoLivreImportInput): Promise<boolean> {
+  private async processOrder(order: MarketplaceOrder, input: MercadoLivreImportInput): Promise<{ customerHasPhone: boolean; hasErrors: boolean }> {
     let invoice: ParsedNFeData | null = null;
+    let hasErrors = false;
     // Captura somente o resultado do parser, sem guardar o XML nem processá-lo duas vezes.
     const extraction = new CustomerExtractionService({
       parse: (xml) => { invoice = this.parser.parse(xml); return invoice; },
     });
     const customer = await extraction.extract({
+      onInvoiceError: () => { hasErrors = true; },
       getRecipient: () => this.recipients.getRecipient(input.marketplaceAccountId, order),
       getInvoiceXml: () => this.invoices.getInvoiceXml({
         marketplaceAccountId: input.marketplaceAccountId,
@@ -74,6 +76,6 @@ export class MercadoLivreImportService {
       marketplaceAccountId: input.marketplaceAccountId, userId: input.userId,
       order: { ...order, customer }, invoice,
     });
-    return result.customerHasPhone;
+    return { customerHasPhone: result.customerHasPhone, hasErrors };
   }
 }

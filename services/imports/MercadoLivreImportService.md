@@ -43,7 +43,7 @@ Os contadores de clientes representam os clientes de cada pedido processado, nã
 - `PARTIAL_SUCCESS`: pelo menos um pedido salvo e pelo menos uma falha.
 - `ERROR`: há falhas e nenhum pedido salvo.
 
-Uma falha de destinatário, XML ou gravação afeta apenas aquele pedido. A busca também isola registros malformados quando chamada pelo importador. Uma falha geral de paginação encerra a busca; os pedidos já salvos permanecem válidos. Nenhuma mensagem externa ou XML é incluído no resumo/logs pelo importador.
+Uma falha de destinatário ou gravação afeta apenas aquele pedido. Se a consulta/XML da NF-e complementar falhar, os dados já obtidos do destinatário ainda são salvos e o pedido conta também como erro, produzindo PARTIAL_SUCCESS. A busca isola registros malformados quando chamada pelo importador. Uma falha geral de paginação encerra a busca; os pedidos já salvos permanecem válidos. Nenhuma mensagem externa ou XML é incluído no resumo/logs pelo importador.
 
 ## Concorrência e limites da API
 
@@ -51,11 +51,11 @@ Pedidos, destinatários e documentos usam o mesmo `MercadoLivreRequestLimiter`: 
 
 O espaçamento é uma política conservadora interna, não uma afirmação de cota oficial. A implementação segue a orientação oficial de reduzir/distribuir requisições ao receber 429: [boas práticas do Mercado Livre](https://developers.mercadolivre.com.br/boas-praticas-para-usar-a-plataforma), consultada em 01/10/2026.
 
-A instância usada pela rota impede duas importações da mesma conta ao mesmo tempo (409). Limites e bloqueio são locais ao processo; uma implantação com múltiplas instâncias deverá adicionar coordenação compartilhada antes de aumentar os workers.
+A instância usada pela rota impede duas importações da mesma conta ao mesmo tempo (409). Uma constraint parcial no PostgreSQL também protege a conta entre processos. O espaçamento das chamadas e a coalescência de refresh continuam locais ao processo; múltiplas instâncias exigem avaliar a cota compartilhada e rotação concorrente de tokens.
 
 ## Operação e validação
 
-A rota é síncrona e responde após a conclusão. Períodos longos podem exceder o timeout do proxy/cliente; a execução não é cancelada por desconexão HTTP. Para operação de alto volume, será necessária evolução explícita para processamento em segundo plano. Uma interrupção do processo ou indisponibilidade do banco durante a finalização pode deixar `PROCESSING`; não há recuperação automática de execuções interrompidas nesta etapa.
+A rota manual é síncrona e responde após a conclusão; períodos longos ainda podem exceder o timeout do proxy/cliente. O novo disparo automático/incremental usa processamento em segundo plano e consulta de status, descritos em [MercadoLivreSyncService.md](MercadoLivreSyncService.md). Ambos possuem heartbeat e detecção de registros interrompidos.
 
 Aplicar as migrações pendentes antes de usar a rota, incluindo `20261001170000_add_partial_import_success` e a migração anterior dos campos opcionais, com `npm exec prisma migrate deploy` no ambiente de banco escolhido. **As migrações não foram aplicadas ao Neon durante a implementação.**
 
